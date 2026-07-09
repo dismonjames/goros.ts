@@ -22,5 +22,5 @@
     "@types/bun": "latest",
     "typescript": "latest"
   },
-  "version": "0.2.6"
+  "version": "0.2.7"
 }

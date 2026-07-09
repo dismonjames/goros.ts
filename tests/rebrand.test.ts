@@ -17,7 +17,7 @@ test("templates config and package scripts reference boronix", () => {
   expect(basicPkg.scripts.dev).toBe("boronix dev")
   expect(basicPkg.scripts.build).toBe("boronix build")
   expect(basicPkg.scripts.start).toBe("boronix start")
-  expect(basicPkg.dependencies.boronix).toBe("^0.2.6")
+  expect(basicPkg.dependencies.boronix).toBe("^0.2.7")
 
   const basicConfig = path.resolve("packages/create-boronix/src/templates/basic/boronix.config.ts")
   expect(existsSync(basicConfig)).toBe(true)
@@ -25,7 +25,7 @@ test("templates config and package scripts reference boronix", () => {
 
 test("docs, changelog and release notes updated", () => {
   const changelog = readFileSync("CHANGELOG.md", "utf8")
-  expect(changelog).toContain("## v0.2.6 - Rebrand to Boronix")
+  expect(changelog).toContain("## v0.2.7 - CI Publish Workflow")
 
   const readme = readFileSync("README.md", "utf8")
   expect(readme).toContain("# Boronix")

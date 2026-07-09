@@ -9,7 +9,7 @@
     "start": "boronix start"
   },
   "dependencies": {
-    "boronix": "^0.2.6"
+    "boronix": "^0.2.7"
   },
-  "version": "0.2.6"
+  "version": "0.2.7"
 }

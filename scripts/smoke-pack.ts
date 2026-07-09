@@ -6,8 +6,8 @@ import os from "node:os"
 console.log("Running smoke pack test...")
 
 const rootDir = path.resolve(".")
-const boronixTar = path.join(rootDir, "packages/boronix/boronix-0.2.6.tgz")
-const createTar = path.join(rootDir, "packages/create-boronix/create-boronix-0.2.6.tgz")
+const boronixTar = path.join(rootDir, "packages/boronix/boronix-0.2.7.tgz")
+const createTar = path.join(rootDir, "packages/create-boronix/create-boronix-0.2.7.tgz")
 
 // Clean old tarballs if exist
 if (existsSync(boronixTar)) rmSync(boronixTar)

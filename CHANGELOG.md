@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## v0.2.7 - CI Publish Workflow
+
+- Added GitHub Actions publish workflow triggered on version tags.
+- Added tag-version guard: tag must match package.json version.
+- Added release:check + smoke:pack gates before npm publish.
+- Publish order: boronix first, create-boronix second.
+- Post-publish verification step via `npm view`.
+- Updated README with npm badges and correct install instructions.
+- `NPM_TOKEN` automation secret set in GitHub repository.
+
 ## v0.2.6 - Rebrand to Boronix
 
 - Rebranded from Goros to Boronix (final brand name).
