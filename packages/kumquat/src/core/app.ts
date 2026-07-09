@@ -1,5 +1,5 @@
 import { pathToFileURL } from "node:url"
-import { createBodyReader } from "./request"
+import { createBodyReader, readFormData } from "./request"
 import { htmlResponse, isFailResult, notFound } from "./response"
 import { matchRoute } from "./router"
 import { createAuth, type Auth } from "./auth"
@@ -126,7 +126,7 @@ async function handleAction(
     session,
     auth,
     flash,
-    form: createActionForm(await req.formData())
+    form: createActionForm(await readFormData(req))
   })
 
   if (isFailResult(result)) {
