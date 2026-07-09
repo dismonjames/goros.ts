@@ -3,6 +3,7 @@ import path from "node:path"
 import { buildCommand } from "./commands/build"
 import { devCommand } from "./commands/dev"
 import { startCommand } from "./commands/start"
+import { formatKumquatError } from "../core/errors"
 import type { ResolvedKumquatConfig } from "../config/types"
 
 type CliOptions = {
@@ -20,7 +21,7 @@ async function main(argv: string[]): Promise<void> {
   }
 
   if (options.command === "build") {
-    await buildCommand(options.root)
+    await buildCommand(options.root, options.runtime)
     return
   }
 
@@ -56,6 +57,6 @@ function parseRuntime(value: string | undefined): ResolvedKumquatConfig["runtime
 }
 
 main(process.argv).catch((error: unknown) => {
-  console.error(error instanceof Error ? error.message : error)
+  console.error(formatKumquatError(error))
   process.exit(1)
 })

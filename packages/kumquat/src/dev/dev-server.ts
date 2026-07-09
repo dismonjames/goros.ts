@@ -1,6 +1,7 @@
 import { loadConfig } from "../config/load-config"
 import type { ResolvedKumquatConfig } from "../config/types"
 import { createKumquatApp } from "../core/app"
+import { KumquatUserError } from "../core/errors"
 import { logRoutes, logServer } from "./logger"
 import { selectRuntime } from "../runtime/select"
 import { scanRoutes } from "../scanner/scan-routes"
@@ -12,9 +13,15 @@ export async function startDevServer(root: string, runtimeOverride?: ResolvedKum
   const runtime = selectRuntime(runtimeName)
 
   const manifest = scanRoutes(resolvePath(root, config.app.routesDir))
+  if (manifest.length === 0) {
+    throw new KumquatUserError("No routes found.", {
+      file: config.app.routesDir,
+      hint: "Create at least one route capsule like app/routes/home/page.html."
+    })
+  }
   const app = createKumquatApp({ root, config, manifest, dev: true })
 
-  logRoutes(manifest, runtimeName)
+  logRoutes(manifest, runtimeName, root)
   runtime.serve({
     port: config.server.port,
     host: config.server.host,

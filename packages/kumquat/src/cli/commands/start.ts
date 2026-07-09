@@ -3,6 +3,7 @@ import path from "node:path"
 import { loadConfig } from "../../config/load-config"
 import type { ResolvedKumquatConfig } from "../../config/types"
 import { createKumquatApp } from "../../core/app"
+import { KumquatUserError } from "../../core/errors"
 import { selectRuntime } from "../../runtime/select"
 import type { BuildManifest } from "../../build/manifest"
 
@@ -10,7 +11,9 @@ export async function startCommand(root: string, runtimeOverride?: ResolvedKumqu
   const manifestPath = path.join(root, ".kumquat", "manifest.json")
 
   if (!existsSync(manifestPath)) {
-    throw new Error("Run kumquat build first.")
+    throw new KumquatUserError("No production manifest found.", {
+      hint: "Run `kumquat build` first."
+    })
   }
 
   const config = await loadConfig(root)

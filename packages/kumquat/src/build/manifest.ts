@@ -1,6 +1,6 @@
 import type { RouteManifest } from "../scanner/route-manifest"
 
 export type BuildManifest = {
-  target: "bun"
+  target: "bun" | "node"
   routes: RouteManifest
 }

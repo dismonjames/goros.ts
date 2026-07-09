@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs"
 import { pathToFileURL } from "node:url"
 import { resolvePath } from "../utils/path"
 import { defaultConfig, type KumquatConfig, type ResolvedKumquatConfig } from "./types"
@@ -6,13 +7,9 @@ export async function loadConfig(root: string): Promise<ResolvedKumquatConfig> {
   const configPath = resolvePath(root, "kumquat.config.ts")
   let userConfig: KumquatConfig = {}
 
-  try {
+  if (existsSync(configPath)) {
     const module = await import(`${pathToFileURL(configPath).href}?t=${Date.now()}`)
     userConfig = module.default ?? {}
-  } catch (error) {
-    if (!(error instanceof Error) || !error.message.includes("Cannot find module")) {
-      throw error
-    }
   }
 
   return {
