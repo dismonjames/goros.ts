@@ -3,5 +3,5 @@ export type RuntimeServer = {
     port: number
     host: string
     fetch(req: Request): Promise<Response> | Response
-  }): void
+  }): unknown
 }
