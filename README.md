@@ -4,6 +4,8 @@ Kumquat.ts is an experimental v0.1 HTML-first fullstack framework for TypeScript
 
 It is server-first, SSR-first, and uses real HTML templates. Client JavaScript is not automatic, React is not part of the framework, and Bun is the first runtime target.
 
+Kumquat is dogfooded through a small homework app using login, dashboard-style HTML pages, local actions, and JSON APIs.
+
 ## Install
 
 ```bash
