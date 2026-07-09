@@ -4,6 +4,13 @@ export type KumquatConfig = {
     port?: number
     host?: string
   }
+  session?: {
+    name?: string
+    secret?: string
+    maxAge?: number
+    sameSite?: "lax" | "strict" | "none"
+    secure?: boolean
+  }
   app?: {
     root?: string
     routesDir?: string
@@ -17,6 +24,13 @@ export type ResolvedKumquatConfig = {
     port: number
     host: string
   }
+  session: {
+    name: string
+    secret: string
+    maxAge: number
+    sameSite: "lax" | "strict" | "none"
+    secure: boolean
+  }
   app: {
     root: string
     routesDir: string
@@ -29,6 +43,13 @@ export const defaultConfig: ResolvedKumquatConfig = {
   server: {
     port: 3000,
     host: "0.0.0.0"
+  },
+  session: {
+    name: "kq_session",
+    secret: "kumquat-dev-session-secret",
+    maxAge: 60 * 60 * 24 * 7,
+    sameSite: "lax",
+    secure: false
   },
   app: {
     root: "app",

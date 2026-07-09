@@ -2,6 +2,7 @@ import { pathToFileURL } from "node:url"
 import { createBodyReader } from "./request"
 import { htmlResponse, isFailResult, notFound } from "./response"
 import { matchRoute } from "./router"
+import { commitSession, createSession, type Session } from "./session"
 import { createActionForm } from "../route/action"
 import { renderPageView } from "../render/view"
 import type { RouteManifest } from "../scanner/route-manifest"
@@ -21,23 +22,27 @@ export function createKumquatApp(options: KumquatAppOptions): { fetch(req: Reque
   return {
     async fetch(req: Request): Promise<Response> {
       const url = new URL(req.url)
+      const session = createSession(req, options.config.session)
       const manifest = options.dev ? scanRoutes(resolvePath(options.root, options.config.app.routesDir)) : options.manifest ?? []
       const publicResponse = await servePublic(resolvePath(options.root, options.config.app.publicDir), url)
 
       if (publicResponse) {
-        return publicResponse
+        return commitSession(publicResponse, session)
       }
 
+      let response: Response
       if (url.pathname.startsWith("/api/")) {
-        return handleApi(req, url, manifest)
+        response = await handleApi(req, url, manifest, session)
+      } else {
+        response = await handlePage(req, url, manifest, options, session)
       }
 
-      return handlePage(req, url, manifest, options)
+      return commitSession(response, session)
     }
   }
 }
 
-async function handleApi(req: Request, url: URL, manifest: RouteManifest): Promise<Response> {
+async function handleApi(req: Request, url: URL, manifest: RouteManifest, session: Session): Promise<Response> {
   const match = matchRoute(manifest, url.pathname, "api")
   if (!match?.item.apiModule) {
     return notFound()
@@ -55,6 +60,7 @@ async function handleApi(req: Request, url: URL, manifest: RouteManifest): Promi
     url,
     params: match.params,
     query: url.searchParams,
+    session,
     body: createBodyReader(req)
   })
 }
@@ -63,7 +69,8 @@ async function handlePage(
   req: Request,
   url: URL,
   manifest: RouteManifest,
-  options: KumquatAppOptions
+  options: KumquatAppOptions,
+  session: Session
 ): Promise<Response> {
   const match = matchRoute(manifest, url.pathname, "page")
   if (!match?.item.pageHtml) {
@@ -71,21 +78,22 @@ async function handlePage(
   }
 
   if (req.method === "POST" && url.search.startsWith("?/")) {
-    return handleAction(req, url, match, options)
+    return handleAction(req, url, match, options, session)
   }
 
   if (req.method !== "GET" && req.method !== "HEAD") {
     return new Response("Method Not Allowed", { status: 405 })
   }
 
-  return renderPage(req, url, match, options)
+  return renderPage(req, url, match, options, session)
 }
 
 async function handleAction(
   req: Request,
   url: URL,
   match: NonNullable<ReturnType<typeof matchRoute>>,
-  options: KumquatAppOptions
+  options: KumquatAppOptions,
+  session: Session
 ): Promise<Response> {
   const actionName = decodeURIComponent(url.search.slice(2))
 
@@ -105,11 +113,12 @@ async function handleAction(
     url,
     params: match.params,
     query: url.searchParams,
+    session,
     form: createActionForm(await req.formData())
   })
 
   if (isFailResult(result)) {
-    return renderPage(req, url, match, options, result.data, result.status)
+    return renderPage(req, url, match, options, session, result.data, result.status)
   }
 
   return result
@@ -120,6 +129,7 @@ async function renderPage(
   url: URL,
   match: NonNullable<ReturnType<typeof matchRoute>>,
   options: KumquatAppOptions,
+  session: Session,
   extraData: Record<string, unknown> = {},
   status = 200
 ): Promise<Response> {
@@ -135,6 +145,7 @@ async function renderPage(
         url,
         params: match.params,
         query: url.searchParams,
+        session,
         user: null
       })
 
