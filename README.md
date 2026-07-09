@@ -6,6 +6,8 @@ It is server-first, SSR-first, and uses real HTML templates. Client JavaScript i
 
 Kumquat is dogfooded through a small homework app using login, dashboard-style HTML pages, local actions, and JSON APIs.
 
+v0.2 adds nested layouts, signed cookie sessions, minimal auth helpers, flash messages, form validation helpers, and a Node runtime adapter.
+
 ## Install
 
 ```bash
@@ -25,6 +27,10 @@ bun run dev
 
 ```bash
 bun run dev:basic
+```
+
+```bash
+bun run dev:homework
 ```
 
 ## App Structure

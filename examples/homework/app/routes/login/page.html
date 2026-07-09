@@ -1,0 +1,23 @@
+<main>
+  <h1>{{ title }}</h1>
+  {{#if message}}
+    <p class="error">{{ message }}</p>
+  {{/if}}
+  <form method="post" action="?/login">
+    <label>
+      Email
+      <input name="email" type="email" value="{{ values.email }}">
+      {{#if fields.email}}
+        <span>{{ fields.email }}</span>
+      {{/if}}
+    </label>
+    <label>
+      Password
+      <input name="password" type="password">
+      {{#if fields.password}}
+        <span>{{ fields.password }}</span>
+      {{/if}}
+    </label>
+    <button>Login</button>
+  </form>
+</main>

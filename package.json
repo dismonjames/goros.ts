@@ -11,7 +11,8 @@
     "test": "bun test",
     "typecheck": "tsc --noEmit",
     "dev:basic": "bun run packages/kumquat/src/cli/main.ts dev --root examples/basic",
-    "start:basic": "bun run packages/kumquat/src/cli/main.ts start --root examples/basic"
+    "start:basic": "bun run packages/kumquat/src/cli/main.ts start --root examples/basic",
+    "dev:homework": "bun run packages/kumquat/src/cli/main.ts dev --root examples/homework"
   },
   "devDependencies": {
     "@types/bun": "latest",

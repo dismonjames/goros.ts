@@ -1,0 +1,12 @@
+<section class="shell">
+  <aside>
+    <a href="/dashboard">Overview</a>
+    <a href="/exercises">Exercises</a>
+    <form method="post" action="/dashboard?/logout">
+      <button>Logout</button>
+    </form>
+  </aside>
+  <div class="panel">
+    {{ slot }}
+  </div>
+</section>

@@ -1,0 +1,11 @@
+<main>
+  <h1>{{ title }}</h1>
+  <ul>
+    {{#each exercises}}
+      <li>
+        <a href="/exercises/{{ id }}">{{ title }}</a>
+        <p>{{ description }}</p>
+      </li>
+    {{/each}}
+  </ul>
+</main>

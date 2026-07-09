@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="/style.css">
+  </head>
+  <body>
+    <header>
+      <a href="/">Kumquat Homework</a>
+      <nav>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/exercises">Exercises</a>
+      </nav>
+    </header>
+    {{#each flash}}
+      <p class="flash">{{ type }}: {{ message }}</p>
+    {{/each}}
+    {{ slot }}
+  </body>
+</html>
