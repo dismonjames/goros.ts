@@ -9,6 +9,9 @@
     "declarationMap": true,
     "sourceMap": true,
     "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true
+    "exactOptionalPropertyTypes": true,
+    "paths": {
+      "kumquat": ["./packages/kumquat/src/index.ts"]
+    }
   }
 }

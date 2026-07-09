@@ -149,7 +149,7 @@ async function renderPage(
   }
 
   const html = renderPageView(
-    match.item.pageHtml,
+    match.item.pageHtml ?? "",
     resolvePath(options.root, options.config.app.root),
     { ...data, ...extraData }
   )

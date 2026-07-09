@@ -1,6 +1,7 @@
 import { mkdirSync, rmSync, writeFileSync } from "node:fs"
 import os from "node:os"
 import path from "node:path"
+import { pathToFileURL } from "node:url"
 import { expect, test } from "bun:test"
 import { createKumquatApp } from "../packages/kumquat/src/core/app"
 import { defaultConfig } from "../packages/kumquat/src/config/types"
@@ -9,6 +10,7 @@ import { scanRoutes } from "../packages/kumquat/src/scanner/scan-routes"
 test("serves pages api and dynamic routes", async () => {
   const root = path.join(os.tmpdir(), `kumquat-integration-${Date.now()}`)
   const routes = path.join(root, "app", "routes")
+  const kumquatImport = pathToFileURL(path.resolve("packages/kumquat/src/index.ts")).href
 
   mkdirSync(path.join(routes, "home"), { recursive: true })
   mkdirSync(path.join(routes, "exercises", "[id]"), { recursive: true })
@@ -16,10 +18,10 @@ test("serves pages api and dynamic routes", async () => {
 
   writeFileSync(path.join(root, "app", "layout.html"), "<html><body>{{ body }}</body></html>")
   writeFileSync(path.join(routes, "home", "page.html"), "<h1>{{ title }}</h1>")
-  writeFileSync(path.join(routes, "home", "page.ts"), "import { page } from 'kumquat'; export default page(async () => ({ title: 'Home' }))")
-  writeFileSync(path.join(routes, "exercises", "api.ts"), "import { api, json } from 'kumquat'; export const GET = api(async () => json({ exercises: [{ id: '1' }] }))")
+  writeFileSync(path.join(routes, "home", "page.ts"), `import { page } from '${kumquatImport}'; export default page(async () => ({ title: 'Home' }))`)
+  writeFileSync(path.join(routes, "exercises", "api.ts"), `import { api, json } from '${kumquatImport}'; export const GET = api(async () => json({ exercises: [{ id: '1' }] }))`)
   writeFileSync(path.join(routes, "exercises", "[id]", "page.html"), "<h1>{{ id }}</h1>")
-  writeFileSync(path.join(routes, "exercises", "[id]", "page.ts"), "import { page } from 'kumquat'; export default page(async ({ params }) => ({ id: params.id }))")
+  writeFileSync(path.join(routes, "exercises", "[id]", "page.ts"), `import { page } from '${kumquatImport}'; export default page(async ({ params }) => ({ id: params.id }))`)
   writeFileSync(path.join(root, "public", "style.css"), "body { color: black; }")
 
   const manifest = scanRoutes(routes)

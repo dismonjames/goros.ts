@@ -7,8 +7,9 @@ export async function servePublic(publicDir: string, url: URL): Promise<Response
   const relativePath = decodedPath.replace(/^\/+/, "")
   const filePath = path.resolve(publicDir, relativePath)
   const publicRoot = path.resolve(publicDir)
+  const relativeToPublic = path.relative(publicRoot, filePath)
 
-  if (!filePath.startsWith(`${publicRoot}${path.sep}`)) {
+  if (relativeToPublic.startsWith("..") || path.isAbsolute(relativeToPublic)) {
     return new Response("Forbidden", { status: 403 })
   }
 
