@@ -8,6 +8,6 @@
     "start": "kumquat start"
   },
   "dependencies": {
-    "kumquat": "^0.1.0"
+    "kumquat": "^0.2.1"
   }
 }
