@@ -148,11 +148,13 @@ async function renderPage(
     }
   }
 
-  const html = renderPageView(
-    match.item.pageHtml ?? "",
-    resolvePath(options.root, options.config.app.root),
-    { ...data, ...extraData }
-  )
+  const html = renderPageView({
+    pageHtmlPath: match.item.pageHtml ?? "",
+    appRoot: resolvePath(options.root, options.config.app.root),
+    routesDir: resolvePath(options.root, options.config.app.routesDir),
+    routeDir: match.item.routeDir,
+    data: { ...data, ...extraData }
+  })
 
   return htmlResponse(html, { status })
 }
