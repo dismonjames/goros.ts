@@ -1,6 +1,6 @@
 # Deploy
 
-v0.1 writes `.kumquat/manifest.json` with:
+Kumquat writes `.kumquat/manifest.json` with:
 
 ```bash
 kumquat build
@@ -13,3 +13,10 @@ kumquat start
 ```
 
 Production bundling and non-Bun adapters are intentionally deferred.
+
+Node runtime can be selected with:
+
+```bash
+kumquat build --runtime node
+kumquat start --runtime node
+```

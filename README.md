@@ -1,6 +1,6 @@
 # Kumquat.ts
 
-Kumquat.ts is an experimental v0.1 HTML-first fullstack framework for TypeScript.
+Kumquat.ts is an experimental HTML-first fullstack framework for TypeScript.
 
 It is server-first, SSR-first, and uses real HTML templates. Client JavaScript is not automatic, React is not part of the framework, and Bun is the first runtime target.
 
@@ -10,8 +10,19 @@ v0.2 adds nested layouts, signed cookie sessions, minimal auth helpers, flash me
 
 ## Install
 
+For a new app:
+
 ```bash
+bunx create-kumquat my-app
+cd my-app
 bun install
+bun run dev
+```
+
+For an existing app:
+
+```bash
+bun add kumquat
 ```
 
 ## Create App
@@ -21,6 +32,34 @@ bunx create-kumquat my-app
 cd my-app
 bun install
 bun run dev
+```
+
+The generated app includes:
+
+```json
+{
+  "scripts": {
+    "dev": "kumquat dev",
+    "build": "kumquat build",
+    "start": "kumquat start"
+  }
+}
+```
+
+## Commands
+
+```bash
+kumquat dev
+kumquat build
+kumquat start
+```
+
+Use Node runtime when needed:
+
+```bash
+kumquat dev --runtime node
+kumquat build --runtime node
+kumquat start --runtime node
 ```
 
 ## Run The Example
@@ -51,6 +90,20 @@ app/
 public/
 kumquat.config.ts
 ```
+
+## Runtime
+
+Bun is the primary runtime. Node has a basic adapter in v0.2.
+
+```ts
+import { defineConfig } from "kumquat"
+
+export default defineConfig({
+  runtime: "bun"
+})
+```
+
+Kumquat is still alpha software. Expect small breaking fixes before a stable release.
 
 ## Page
 
