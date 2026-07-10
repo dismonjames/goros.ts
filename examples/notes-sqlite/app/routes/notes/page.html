@@ -1,0 +1,33 @@
+<h1>Notes</h1>
+
+{{#if message}}
+  <p>{{ message }}</p>
+{{/if}}
+
+<form method="post" action="?/create">
+  <label>
+    Title
+    <input name="title" value="{{ fields.title }}">
+  </label>
+
+  <label>
+    Body
+    <textarea name="body">{{ fields.body }}</textarea>
+  </label>
+
+  <button type="submit">Create note</button>
+</form>
+
+<ul>
+  {{#each notes}}
+    <li>
+      <strong>{{ title }}</strong>
+      <p>{{ body }}</p>
+
+      <form method="post" action="?/remove">
+        <input type="hidden" name="id" value="{{ id }}">
+        <button type="submit">Delete</button>
+      </form>
+    </li>
+  {{/each}}
+</ul>

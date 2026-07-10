@@ -16,6 +16,10 @@ ${colors.bold("Commands")}
   typegen   Generate route types
   routes    List all project routes as a tree
   inspect   Inspect matched files for a specific URL route
+  db generate
+  db migrate
+  db push
+  db seed
 
 ${colors.bold("Options")}
   -h, --help       Show help
@@ -56,6 +60,14 @@ export function formatCommandHelp(command: string): string {
   --full              Output full absolute paths of matched source modules
   --flat              Output a flat route list without tree structures
   --plain             Disable styling and colors
+  --no-color          Disable colors`
+  } else if (command === "db") {
+    usage = `boronix db generate
+  boronix db migrate
+  boronix db push
+  boronix db seed`
+    options = `  --root <dir>        Project root
+  --plain             Disable colors, unicode, and spinner
   --no-color          Disable colors`
   } else {
     options = `  --root <dir>        Project root

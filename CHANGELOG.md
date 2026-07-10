@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## v0.4.0 - Database DX With Drizzle
+
+- Added `create-boronix --db none|sqlite|postgres`.
+- Added SQLite and Postgres Drizzle templates with `app/db/schema.ts`, `client.ts`, `seed.ts`, `drizzle.config.ts`, and `.env.example`.
+- Added generated `/notes` CRUD route for DB templates.
+- Added `boronix db generate`, `boronix db migrate`, `boronix db push`, and `boronix db seed` wrappers.
+- Added database checks to `boronix doctor` when `drizzle.config.ts` exists.
+- Added `examples/notes-sqlite` and database docs/tutorial.
+- Bumped packages and generated app dependency to `0.4.0`.
+
 ## v0.3.0 - Developer Experience Core
 
 - Added rich, visual Dev Error Page HTML rendering for development mode.

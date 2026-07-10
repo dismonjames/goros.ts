@@ -1,0 +1,25 @@
+{
+  "name": "boronix-notes-sqlite-example",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "boronix dev",
+    "build": "boronix build",
+    "start": "boronix start",
+    "doctor": "boronix doctor",
+    "typegen": "boronix typegen",
+    "db:generate": "boronix db generate",
+    "db:migrate": "boronix db migrate",
+    "db:push": "boronix db push",
+    "db:seed": "boronix db seed"
+  },
+  "dependencies": {
+    "boronix": "^0.4.0",
+    "drizzle-orm": "latest"
+  },
+  "devDependencies": {
+    "drizzle-kit": "latest",
+    "@types/bun": "latest"
+  },
+  "version": "0.4.0"
+}

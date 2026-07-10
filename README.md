@@ -35,6 +35,16 @@ bun install
 bun run dev
 ```
 
+With SQLite database scaffolding:
+
+```bash
+npx create-boronix my-app --db sqlite
+cd my-app
+npm install
+npm run db:push
+npm run dev
+```
+
 ## Generated App Scripts
 
 ```json
@@ -60,7 +70,23 @@ boronix inspect   # Inspect a specific route
 boronix info      # Print environment info
 boronix doctor    # Check project health
 boronix typegen   # Generate route types
+boronix db push   # Push Drizzle schema for DB apps
 ```
+
+## Database
+
+Boronix does not implement an ORM or migration engine. It provides Drizzle integration: SQLite/Postgres templates, the `app/db` convention, CLI wrappers, and a notes CRUD example.
+
+```bash
+npx create-boronix my-app --db sqlite
+cd my-app
+npm install
+npm run db:push
+npm run db:seed
+npm run dev
+```
+
+Use SQLite for local/dev and small apps. Use Postgres for real deploys. See [Database docs](./docs/database.md).
 
 ### Dev output
 

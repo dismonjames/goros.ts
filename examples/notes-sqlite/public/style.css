@@ -1,0 +1,34 @@
+body {
+  font-family: system-ui, sans-serif;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 32px 20px;
+  line-height: 1.5;
+}
+
+nav {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+form {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+label {
+  display: grid;
+  gap: 4px;
+}
+
+input,
+textarea,
+button {
+  font: inherit;
+}
+
+textarea {
+  min-height: 96px;
+}

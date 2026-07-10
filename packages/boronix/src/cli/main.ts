@@ -11,6 +11,7 @@ import { doctorCommand } from "./commands/doctor"
 import { typegenCommand } from "./commands/typegen"
 import { routesCommand } from "./commands/routes"
 import { inspectCommand } from "./commands/inspect"
+import { dbCommand } from "./commands/db"
 import { initUiSettings } from "./ui/terminal"
 import { formatRootHelp, formatCommandHelp } from "./ui/format"
 import { formatCliError } from "./ui/errors"
@@ -142,6 +143,14 @@ async function main(argv: string[]): Promise<void> {
       noColor: parsed.noColor,
       json: parsed.json,
       method: parsed.method
+    })
+    return
+  }
+
+  if (parsed.command === "db") {
+    await dbCommand(parsed.root, parsed.positionals[0], {
+      plain: parsed.plain,
+      noColor: parsed.noColor
     })
     return
   }

@@ -36,3 +36,18 @@ This document outlines design and rebranding decisions made during version `v0.2
 
 ### 4. 404/NotFound throwing/returning Response
 - Defined `notFound()` to return a 404 Response. Intercepted 404 Responses (returned or thrown) inside loaders/APIs/actions to trigger custom `not-found.html` page rendering or 404 JSON response.
+
+## v0.4.0 Decisions
+
+### 1. Drizzle Is The Database Layer
+- Boronix provides Drizzle templates, conventions, CLI wrappers, and examples.
+- Boronix does not implement an ORM, database engine, or migration engine.
+
+### 2. SQLite Driver
+- Tried `better-sqlite3` first, matching the phase requirement.
+- `bun install` failed in this environment because `better-sqlite3` fell back to native build and `node-gyp` was unavailable.
+- Switched SQLite templates to `bun:sqlite` with `drizzle-orm/bun-sqlite`, which Drizzle documents as a native Bun SQLite driver path.
+
+### 3. Notes Actions Use Current Boronix Form API
+- The requested CRUD action snippets used `request.formData()`, but Boronix action context currently exposes the `form` helper.
+- Generated notes actions use `form.string()` and `form.number()` plus `fail(data, { status })` so templates compile against the current public API.

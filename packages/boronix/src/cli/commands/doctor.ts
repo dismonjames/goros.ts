@@ -38,6 +38,7 @@ export async function doctorCommand(
   const projectChecks: CheckResult[] = []
   const routesChecks: CheckResult[] = []
   const runtimeChecks: CheckResult[] = []
+  const databaseChecks: CheckResult[] = []
 
   // --- Category: project ---
   // 1. package.json found
@@ -73,6 +74,33 @@ export async function doctorCommand(
     status: publicExists ? "success" : "warning",
     hint: !publicExists ? "Create a `public` folder for static assets (optional)." : undefined
   })
+
+  const drizzleConfigExists = existsSync(path.join(root, "drizzle.config.ts"))
+  if (drizzleConfigExists) {
+    const schemaExists = existsSync(path.join(root, "app/db/schema.ts"))
+    const clientExists = existsSync(path.join(root, "app/db/client.ts"))
+    const drizzleKitInstalled = hasPackageDependency(root, "drizzle-kit")
+
+    databaseChecks.push({
+      label: "config       drizzle.config.ts",
+      status: "success"
+    })
+    databaseChecks.push({
+      label: schemaExists ? "schema       app/db/schema.ts" : "schema       missing",
+      status: schemaExists ? "success" : "error",
+      hint: !schemaExists ? "Create `app/db/schema.ts` or recreate the app with --db sqlite/postgres." : undefined
+    })
+    databaseChecks.push({
+      label: clientExists ? "client       app/db/client.ts" : "client       missing",
+      status: clientExists ? "success" : "error",
+      hint: !clientExists ? "Create `app/db/client.ts` or recreate the app with --db sqlite/postgres." : undefined
+    })
+    databaseChecks.push({
+      label: drizzleKitInstalled ? "drizzle-kit  installed" : "drizzle-kit  missing",
+      status: drizzleKitInstalled ? "success" : "error",
+      hint: !drizzleKitInstalled ? "Install `drizzle-kit` as a dev dependency." : undefined
+    })
+  }
 
   // --- Category: routes ---
   let duplicateRoutesFound = false
@@ -228,6 +256,9 @@ export async function doctorCommand(
 
   printCategory("project", projectChecks)
   printCategory("routes", routesChecks)
+  if (databaseChecks.length > 0) {
+    printCategory("database", databaseChecks)
+  }
   printCategory("runtime", runtimeChecks)
 
   if (errorsCount > 0) {
@@ -256,6 +287,15 @@ function hasBinary(bin: string): boolean {
   try {
     execSync(`which ${bin}`, { stdio: "ignore" })
     return true
+  } catch {
+    return false
+  }
+}
+
+function hasPackageDependency(root: string, dependencyName: string): boolean {
+  try {
+    const pkg = JSON.parse(readFileSync(path.join(root, "package.json"), "utf8"))
+    return Boolean(pkg.dependencies?.[dependencyName] ?? pkg.devDependencies?.[dependencyName])
   } catch {
     return false
   }

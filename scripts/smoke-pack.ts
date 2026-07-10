@@ -6,8 +6,8 @@ import os from "node:os"
 console.log("Running smoke pack test...")
 
 const rootDir = path.resolve(".")
-const boronixTar = path.join(rootDir, "packages/boronix/boronix-0.3.0.tgz")
-const createTar = path.join(rootDir, "packages/create-boronix/create-boronix-0.3.0.tgz")
+const boronixTar = path.join(rootDir, "packages/boronix/boronix-0.4.0.tgz")
+const createTar = path.join(rootDir, "packages/create-boronix/create-boronix-0.4.0.tgz")
 
 // Clean old tarballs if exist
 if (existsSync(boronixTar)) rmSync(boronixTar)
@@ -29,7 +29,7 @@ mkdirSync(tempDir, { recursive: true })
 try {
   // Test create-boronix non-interactive scaffolding using the built script
   console.log("Testing create-boronix non-interactive...")
-  execSync(`bun ${rootDir}/packages/create-boronix/dist/index.js my-app --template basic --runtime bun --no-install --no-git`, {
+  execSync(`bun ${rootDir}/packages/create-boronix/dist/index.js my-app --template basic --runtime bun --db none --no-install --no-git`, {
     cwd: tempDir,
     stdio: "inherit"
   })
@@ -102,6 +102,77 @@ try {
     process.exit(1)
   }
   console.log("✔ Inspect / parsed successfully:", parsedInspect.matched)
+
+  console.log("Testing create-boronix SQLite database scaffold...")
+  execSync(`bun ${rootDir}/packages/create-boronix/dist/index.js sqlite-app --template basic --runtime bun --db sqlite --no-install --no-git`, {
+    cwd: tempDir,
+    stdio: "inherit"
+  })
+
+  const sqliteAppPath = path.join(tempDir, "sqlite-app")
+  const sqlitePkgPath = path.join(sqliteAppPath, "package.json")
+  const sqlitePkg = JSON.parse(readFileSync(sqlitePkgPath, "utf8"))
+  if (!sqlitePkg.dependencies?.["drizzle-orm"] || !sqlitePkg.devDependencies?.["drizzle-kit"]) {
+    console.error("✖ SQLite scaffold missing Drizzle dependencies")
+    process.exit(1)
+  }
+  if (!existsSync(path.join(sqliteAppPath, "app/db/schema.ts")) || !existsSync(path.join(sqliteAppPath, "app/routes/notes/page.ts"))) {
+    console.error("✖ SQLite scaffold missing database or notes files")
+    process.exit(1)
+  }
+  delete sqlitePkg.dependencies.boronix
+  writeFileSync(sqlitePkgPath, JSON.stringify(sqlitePkg, null, 2), "utf8")
+
+  console.log("Installing SQLite app dependencies...")
+  execSync(`bun add ${boronixTar}`, { cwd: sqliteAppPath, stdio: "inherit" })
+  execSync("bun install", { cwd: sqliteAppPath, stdio: "inherit" })
+
+  console.log("Running SQLite app doctor...")
+  execSync("bunx boronix doctor", { cwd: sqliteAppPath, stdio: "inherit" })
+
+  console.log("Running SQLite app typegen...")
+  execSync("bunx boronix typegen", { cwd: sqliteAppPath, stdio: "inherit" })
+
+  console.log("Running SQLite app db push...")
+  execSync("bunx boronix db push", { cwd: sqliteAppPath, stdio: "inherit" })
+
+  console.log("Running SQLite app db seed...")
+  execSync("bunx boronix db seed", { cwd: sqliteAppPath, stdio: "inherit" })
+
+  console.log("Running SQLite app build...")
+  execSync("bunx boronix build", { cwd: sqliteAppPath, stdio: "inherit" })
+
+  console.log("Running SQLite app routes --json...")
+  const sqliteRoutesJson = execSync("bunx boronix routes --json", { cwd: sqliteAppPath }).toString()
+  const parsedSqliteRoutes = JSON.parse(sqliteRoutesJson)
+  if (!Array.isArray(parsedSqliteRoutes) || !parsedSqliteRoutes.some((route: any) => route.path === "/notes")) {
+    console.error("✖ SQLite routes JSON missing /notes:", sqliteRoutesJson)
+    process.exit(1)
+  }
+
+  console.log("Running SQLite app inspect /notes --json...")
+  const sqliteInspectJson = execSync("bunx boronix inspect /notes --json", { cwd: sqliteAppPath }).toString()
+  const parsedSqliteInspect = JSON.parse(sqliteInspectJson)
+  if (!parsedSqliteInspect.success) {
+    console.error("✖ Inspect /notes failed:", sqliteInspectJson)
+    process.exit(1)
+  }
+
+  console.log("Testing create-boronix Postgres database scaffold...")
+  execSync(`bun ${rootDir}/packages/create-boronix/dist/index.js postgres-app --template basic --runtime node --db postgres --no-install --no-git`, {
+    cwd: tempDir,
+    stdio: "inherit"
+  })
+  const postgresAppPath = path.join(tempDir, "postgres-app")
+  const postgresPkg = JSON.parse(readFileSync(path.join(postgresAppPath, "package.json"), "utf8"))
+  if (!postgresPkg.dependencies?.postgres || !postgresPkg.dependencies?.["drizzle-orm"] || !postgresPkg.devDependencies?.["drizzle-kit"]) {
+    console.error("✖ Postgres scaffold missing dependencies")
+    process.exit(1)
+  }
+  if (!readFileSync(path.join(postgresAppPath, "drizzle.config.ts"), "utf8").includes('dialect: "postgresql"')) {
+    console.error("✖ Postgres scaffold missing postgresql Drizzle config")
+    process.exit(1)
+  }
 
   console.log("✔ smoke-pack test completed successfully!")
 } finally {
