@@ -189,6 +189,10 @@ async function run() {
       }
     }
     if (runtime === "node") {
+      pkg.engines = {
+        ...(pkg.engines ?? {}),
+        node: ">=18.18"
+      }
       pkg.devDependencies = {
         ...(pkg.devDependencies ?? {}),
         "tsx": "^4"
