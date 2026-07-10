@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "node:fs"
 import { pathToFileURL } from "node:url"
 import path from "node:path"
-import { BoronixUserError, diagnoseError, type BoronixErrorPhase, type BoronixDiagnostic } from "./errors"
+import { BoronixUserError, diagnoseError, renderDevErrorPage as renderDiagnosticDevErrorPage, type BoronixErrorPhase, type BoronixDiagnostic } from "./errors"
 import { createBodyReader, readFormData } from "./request"
 import { htmlResponse, isFailResult, notFound, json } from "./response"
 import { matchRoute } from "./router"
@@ -894,7 +894,7 @@ export function handleDevOrErrorPageResponse(
   diagnostic.status = 500
 
   if (options.dev) {
-    const html = renderDevErrorPage(diagnostic)
+    const html = renderDiagnosticDevErrorPage(diagnostic)
     return htmlResponse(html, { status: 500 })
   }
 

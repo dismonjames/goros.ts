@@ -59,3 +59,33 @@ test("handleDevOrErrorPageResponse returns 500 response without leak in prod", (
     expect(text).not.toContain("Secret database credentials leak!")
   })
 })
+
+test("handleDevOrErrorPageResponse uses polished dev overlay in dev mode", async () => {
+  const req = new Request("http://localhost/crash")
+  const url = new URL(req.url)
+
+  const response = handleDevOrErrorPageResponse(
+    new Error("Cannot read properties of undefined"),
+    "page-loader",
+    req,
+    url,
+    [],
+    {
+      root: ".",
+      dev: true,
+      config: {
+        runtime: "bun",
+        server: { port: 3000, host: "0.0.0.0" },
+        app: { root: "app", routesDir: "app/routes", publicDir: "public" },
+        session: { name: "kq_session", secret: "123", maxAge: 3600, sameSite: "lax", secure: false },
+        cli: { color: true, unicode: true, requestLog: true, groupRoutes: true }
+      }
+    }
+  )
+
+  const html = await response.text()
+  expect(response.status).toBe(500)
+  expect(html).toContain("Boronix Dev Overlay")
+  expect(html).toContain("source-box")
+  expect(html).toContain("Cannot read properties of undefined")
+})
