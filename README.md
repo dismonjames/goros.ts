@@ -167,9 +167,12 @@ built server-rendered app in 41ms
 ```txt
 app/
   routes/
-    home/
-      page.html       ← SSR HTML template
-      page.ts         ← loader (returns data)
+    page.html         ← GET /
+    page.ts           ← loader for /
+    login/
+      page.html
+      page.ts
+      actions.ts
     exercises/
       page.html
       page.ts
@@ -178,6 +181,12 @@ app/
   layout.html         ← root layout
 public/               ← static assets
 boronix.config.ts
+```
+
+```txt
+page.html             → /
+login/page.html       → /login
+users/[id]/page.html  → /users/:id
 ```
 
 ## Config
@@ -194,7 +203,7 @@ export default defineConfig({
 ## Page
 
 ```ts
-// app/routes/home/page.ts
+// app/routes/page.ts
 import { page } from "boronix"
 
 export default page(async () => {
@@ -203,7 +212,7 @@ export default page(async () => {
 ```
 
 ```html
-<!-- app/routes/home/page.html -->
+<!-- app/routes/page.html -->
 <h1>{{ title }}</h1>
 ```
 

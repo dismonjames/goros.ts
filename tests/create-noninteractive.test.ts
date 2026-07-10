@@ -22,7 +22,7 @@ test("create-boronix basic template non-interactive", () => {
     
     const pkg = JSON.parse(readFileSync(path.join(appPath, "package.json"), "utf8"))
     expect(pkg.name).toBe("my-app")
-    expect(pkg.dependencies.boronix).toBe("^0.6.0")
+    expect(pkg.dependencies.boronix).toBe("^0.6.1")
   } finally {
     rmSync(tempDir, { recursive: true, force: true })
   }

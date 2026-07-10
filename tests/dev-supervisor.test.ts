@@ -8,13 +8,13 @@ const bun = path.join(os.homedir(), ".bun", "bin", "bun")
 
 function fixture(): string {
   const root = path.join(os.tmpdir(), `boronix-supervisor-${Date.now()}-${Math.random().toString(36).slice(2)}`)
-  mkdirSync(path.join(root, "app", "routes", "home"), { recursive: true })
+  mkdirSync(path.join(root, "app", "routes"), { recursive: true })
   mkdirSync(path.join(root, "public"), { recursive: true })
   writeFileSync(path.join(root, "package.json"), JSON.stringify({ type: "module", devDependencies: { tsx: "^4" } }))
   mkdirSync(path.join(root, "node_modules"), { recursive: true })
   symlinkSync(path.join(repo, "node_modules", "tsx"), path.join(root, "node_modules", "tsx"), "dir")
-  writeFileSync(path.join(root, "app", "routes", "home", "page.html"), "<main>{{ message }} {{ pid }} {{ runtime }} {{ bun }}</main>")
-  writeFileSync(path.join(root, "app", "routes", "home", "page.ts"), 'export default () => ({ message: "version-one", pid: process.pid, runtime: process.release?.name ?? "unknown", bun: String(typeof Bun !== "undefined") })\n')
+  writeFileSync(path.join(root, "app", "routes", "page.html"), "<main>{{ message }} {{ pid }} {{ runtime }} {{ bun }}</main>")
+  writeFileSync(path.join(root, "app", "routes", "page.ts"), 'export default () => ({ message: "version-one", pid: process.pid, runtime: process.release?.name ?? "unknown", bun: String(typeof Bun !== "undefined") })\n')
   writeFileSync(path.join(root, "public", "style.css"), "body { color: red; }\n")
   return root
 }
@@ -54,15 +54,26 @@ for (const runtime of ["bun", "node"] as const) {
         expect(first.body).toContain("node false")
       }
 
-      writeFileSync(path.join(root, "app", "routes", "home", "page.ts"), 'export default () => ({ message: "version-two", pid: process.pid, runtime: process.release?.name ?? "unknown", bun: String(typeof Bun !== "undefined") })\n')
+      writeFileSync(path.join(root, "app", "routes", "page.ts"), 'export default () => ({ message: "version-two", pid: process.pid, runtime: process.release?.name ?? "unknown", bun: String(typeof Bun !== "undefined") })\n')
       const second = await waitFor(port, value => value.status === 200 && value.body.includes("version-two"))
       const secondPid = second.body.match(/version-two\s+(\d+)/)?.[1]
       expect(secondPid).toBeDefined()
       expect(secondPid).not.toBe(firstPid)
 
-      writeFileSync(path.join(root, "app", "routes", "home", "page.html"), "<main>template-two {{ message }} {{ pid }}</main>")
+      writeFileSync(path.join(root, "app", "routes", "page.html"), "<main>template-two {{ message }} {{ pid }}</main>")
       const template = await waitFor(port, value => value.status === 200 && value.body.includes("template-two"))
       expect(template.body.match(/version-two\s+(\d+)/)?.[1]).toBe(secondPid)
+
+      rmSync(path.join(root, "app", "routes", "page.html"))
+      const rootGoneDeadline = Date.now() + 8000
+      let rootGone = false
+      while (Date.now() < rootGoneDeadline) {
+        try { if ((await response(port)).status === 404) { rootGone = true; break } } catch {}
+        await Bun.sleep(40)
+      }
+      expect(rootGone).toBe(true)
+      writeFileSync(path.join(root, "app", "routes", "page.html"), "<main>template-restored {{ message }} {{ pid }}</main>")
+      await waitFor(port, value => value.status === 200 && value.body.includes("template-restored"))
 
       const about = path.join(root, "app", "routes", "about")
       mkdirSync(about, { recursive: true })

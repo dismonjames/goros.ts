@@ -11,7 +11,7 @@ import { pathToFileURL } from "node:url"
 
 function createTempApp(): string {
   const root = path.join(os.tmpdir(), `boronix-int-dev-${Date.now()}-${Math.random().toString(36).slice(2)}`)
-  const routes = path.join(root, "app", "routes", "home")
+  const routes = path.join(root, "app", "routes")
   mkdirSync(routes, { recursive: true })
   mkdirSync(path.join(root, "public"), { recursive: true })
   writeFileSync(path.join(root, "app", "layout.html"), "<html><body>{{ body }}</body></html>")
@@ -164,7 +164,7 @@ test("dev app template change: new content appears on next request", async () =>
   const html1 = await res1.text()
   expect(html1).toContain("Home")
 
-  writeFileSync(path.join(root, "app", "routes", "home", "page.html"), "<h1>Changed Content</h1>")
+  writeFileSync(path.join(root, "app", "routes", "page.html"), "<h1>Changed Content</h1>")
 
   const res2 = await devApp.fetch(new Request("http://localhost/"))
   const html2 = await res2.text()

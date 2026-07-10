@@ -1,5 +1,6 @@
 export type RouteManifestItem = {
   kind: "page" | "api"
+  routeId: string
   routePath: string
   apiPath?: string
   params: string[]

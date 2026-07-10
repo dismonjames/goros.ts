@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## v0.6.1 - Root Route Convention Cleanup
+
+- Moved the root route convention to `app/routes/page.html`.
+- Added root loader support through `app/routes/page.ts`.
+- Removed the special `app/routes/home` to `/` mapping.
+- `app/routes/home` now maps normally to `/home`.
+- Updated route scanning, inspect, routes, typegen, templates, examples and dev reload coverage.
+- Added migration diagnostics and documentation for existing applications.
+
 ## v0.6.0 - Dev Server Speed & HMR-lite
 
 - Added stable development file watching.

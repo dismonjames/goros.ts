@@ -17,6 +17,14 @@ boronix inspect <pathname> [options]
 
 ## Examples
 
+### Inspecting the Root Route
+
+```bash
+boronix inspect / --json
+```
+
+The result points to `app/routes/page.html` and, when present, `app/routes/page.ts`.
+
 ### Matching an Action
 ```bash
 boronix inspect "/login?/login"

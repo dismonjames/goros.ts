@@ -3,8 +3,7 @@ import { toPosixPath } from "../utils/path"
 
 export function routePathFromDir(relativeDir: string): string {
   const segments = toPosixPath(relativeDir).split("/").filter(Boolean)
-  const routeSegments = segments.filter((segment) => segment !== "home").map(convertSegment)
-  return `/${routeSegments.join("/")}`.replace(/\/+$/, "") || "/"
+  return `/${segments.map(convertSegment).join("/")}`.replace(/\/+$/, "") || "/"
 }
 
 export function apiPathFromRoutePath(routePath: string): string {

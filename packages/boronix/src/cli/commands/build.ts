@@ -76,7 +76,7 @@ export async function buildCommand(
     throw new BoronixUserError("No routes found.", {
       code: "KQ_ROUTES_MISSING",
       file: config.app.routesDir,
-      hint: "Create at least one route capsule like app/routes/home/page.html."
+      hint: "Create a route capsule like app/routes/page.html or app/routes/login/page.html."
     })
   }
 
@@ -198,7 +198,7 @@ export async function buildCommand(
   // Write actual build manifest
   writeBuildOutput(root, {
     version: 1,
-    frameworkVersion: "0.6.0",
+    frameworkVersion: "0.6.1",
     createdAt: new Date().toISOString(),
     runtime: runtimeName as "bun" | "node",
     mode: "production",
@@ -228,7 +228,7 @@ function getRouteGroup(routePath: string): string {
   }
   const segments = p.split("/").filter(Boolean)
   const first = segments[0]
-  if (!first || first === "login" || first === "home") {
+  if (!first || first === "login") {
     return "root"
   }
   return first

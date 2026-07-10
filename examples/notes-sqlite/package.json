@@ -14,12 +14,12 @@
     "db:seed": "boronix db seed"
   },
   "dependencies": {
-    "boronix": "^0.6.0",
+    "boronix": "^0.6.1",
     "drizzle-orm": "latest"
   },
   "devDependencies": {
     "drizzle-kit": "latest",
     "@types/bun": "latest"
   },
-  "version": "0.6.0"
+  "version": "0.6.1"
 }

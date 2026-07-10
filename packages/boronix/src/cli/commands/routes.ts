@@ -45,7 +45,7 @@ export async function routesCommand(
     throw new BoronixUserError("No routes found.", {
       code: "KQ_ROUTES_MISSING",
       file: config.app.routesDir,
-      hint: "Create at least one route capsule like app/routes/home/page.html."
+      hint: "Create a route capsule like app/routes/page.html or app/routes/login/page.html."
     })
   }
 
@@ -101,6 +101,9 @@ export async function routesCommand(
     const jsonOutput = entries.map(e => ({
       method: e.method,
       path: e.path,
+      pattern: e.path,
+      kind: e.type,
+      file: e.source,
       type: e.type,
       source: e.source
     }))
@@ -158,7 +161,7 @@ function getRouteGroup(routePath: string): string {
   }
   const segments = p.split("/").filter(Boolean)
   const first = segments[0]
-  if (!first || first === "login" || first === "home") {
+  if (!first || first === "login") {
     return "root"
   }
   return first

@@ -71,7 +71,7 @@ boronix dev --debug-watch
 Outputs detailed watch diagnostics:
 
 ```txt
-watch modify app/routes/home/page.html
+watch modify app/routes/page.html
 classify template
 invalidate template cache
 broadcast reload revision=4

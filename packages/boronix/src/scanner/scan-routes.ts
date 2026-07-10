@@ -21,6 +21,7 @@ export function scanRoutes(routesDir: string): RouteManifest {
     if (existsSync(pageHtml)) {
       const item = {
         kind: "page" as const,
+        routeId: routePath,
         routePath,
         params,
         routeDir,
@@ -34,6 +35,7 @@ export function scanRoutes(routesDir: string): RouteManifest {
     if (existsSync(apiModule)) {
       const item = {
         kind: "api" as const,
+        routeId: routePath,
         routePath,
         apiPath: apiPathFromRoutePath(routePath),
         params,

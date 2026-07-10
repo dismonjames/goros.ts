@@ -69,7 +69,7 @@ export async function doctorCommand(
     projectChecks.push({
       label: routesDirExists ? "app/routes found" : "app/routes missing",
       status: routesDirExists ? "success" : "error",
-      hint: !routesDirExists ? "Create `app/routes/home/page.html`." : undefined
+      hint: !routesDirExists ? "Create `app/routes/page.html` or another route capsule." : undefined
     })
 
     const publicDir = config ? resolvePath(root, config.app.publicDir) : path.join(root, "public")
@@ -210,6 +210,18 @@ export async function doctorCommand(
   // Legacy Category: routes
   const legacyRoutesChecks: CheckResult[] = []
   if (!isProductionMode) {
+    const rootPage = path.join(routesDir, "page.html")
+    const legacyHomePage = path.join(routesDir, "home", "page.html")
+    if (existsSync(rootPage)) {
+      legacyRoutesChecks.push({ label: "root route  app/routes/page.html", status: "success" })
+    }
+    if (existsSync(legacyHomePage) && !existsSync(rootPage)) {
+      legacyRoutesChecks.push({
+        label: "legacy      app/routes/home now maps to /home",
+        status: "warning",
+        hint: "KQ_LEGACY_HOME_ROUTE\napp/routes/home is no longer treated as the root route.\nMove page.html and page.ts from app/routes/home/ to app/routes/."
+      })
+    }
     legacyRoutesChecks.push({
       label: "no duplicate routes",
       status: duplicateRoutesFound ? "error" : "success",
@@ -448,6 +460,9 @@ export async function doctorCommand(
 
       const branchColored = isPlain ? branch : colors.muted(branch)
       console.log(`  ${branchColored} ${sym} ${c.label}`)
+      if (c.status === "warning" && c.hint) {
+        console.log(`      ${c.hint}`)
+      }
     }
     console.log("")
   }

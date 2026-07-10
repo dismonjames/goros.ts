@@ -55,7 +55,7 @@ test("health route is served when enabled", async () => {
   expect(json).toEqual({
     status: "ok",
     framework: "boronix",
-    version: "0.6.0"
+    version: "0.6.1"
   })
 })
 

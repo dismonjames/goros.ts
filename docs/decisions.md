@@ -126,3 +126,10 @@ This document outlines design and rebranding decisions made during version `v0.2
 - Default 50ms debounce, configurable via `dev.watch.debounce` (range 10–2000ms).
 - Multiple events for the same file within the window are coalesced into a single change.
 - A batch of changes across multiple files produces one reload event.
+
+## v0.6.1 Decisions
+
+### 1. Direct Root Route Capsule
+- The root page is the route capsule directly at `app/routes/page.html`, with an optional `app/routes/page.ts` loader.
+- Route paths are calculated only from the directory relative to `app/routes`: an empty relative directory is `/`, and `home` is `/home`.
+- The former `home → /` compatibility mapping was removed rather than silently retained. `boronix doctor` warns with `KQ_LEGACY_HOME_ROUTE` when it finds the legacy shape without a direct root page.

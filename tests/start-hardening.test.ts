@@ -31,7 +31,7 @@ test("start command fails if runtime mismatch occurs", async () => {
   fs.mkdirSync(boronixDir, { recursive: true })
   const manifestData = {
     version: 1,
-    frameworkVersion: "0.6.0",
+    frameworkVersion: "0.6.1",
     createdAt: new Date().toISOString(),
     runtime: "bun",
     mode: "production",

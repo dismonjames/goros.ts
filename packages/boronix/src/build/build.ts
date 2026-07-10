@@ -32,14 +32,14 @@ export async function build(root: string, runtimeOverride?: ResolvedBoronixConfi
   if (routes.length === 0) {
     throw new BoronixUserError("No routes found.", {
       file: config.app.routesDir,
-      hint: "Create at least one route capsule like app/routes/home/page.html."
+      hint: "Create a route capsule like app/routes/page.html or app/routes/login/page.html."
     })
   }
 
   const resolvedRoot = path.resolve(root)
   writeBuildOutput(root, {
     version: 1,
-    frameworkVersion: "0.6.0",
+    frameworkVersion: "0.6.1",
     createdAt: new Date().toISOString(),
     runtime: runtimeName as "bun" | "node",
     mode: "production",

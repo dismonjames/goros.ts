@@ -10,18 +10,18 @@ test("create template has dev script", () => {
   expect(basicPkg.scripts.dev).toBe("boronix dev")
 })
 
-test("create template uses ^0.6.0 for boronix", () => {
+test("create template uses ^0.6.1 for boronix", () => {
   const basicPkg = JSON.parse(readFileSync(
     path.resolve("packages/create-boronix/src/templates/basic/package.json"),
     "utf8"
   ))
-  expect(basicPkg.dependencies.boronix).toBe("^0.6.0")
+  expect(basicPkg.dependencies.boronix).toBe("^0.6.1")
 
   const hwPkg = JSON.parse(readFileSync(
     path.resolve("packages/create-boronix/src/templates/homework/package.json"),
     "utf8"
   ))
-  expect(hwPkg.dependencies.boronix).toBe("^0.6.0")
+  expect(hwPkg.dependencies.boronix).toBe("^0.6.1")
 })
 
 test("create template has no separate dev client package", () => {

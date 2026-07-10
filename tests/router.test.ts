@@ -13,9 +13,9 @@ test("matches dynamic routes", () => {
 
 test("matches catch-all routes after static and dynamic", () => {
   const manifest: RouteManifest = [
-    { kind: "page", routePath: "/files/static", params: [], routeDir: "" },
-    { kind: "page", routePath: "/files/:id", params: ["id"], routeDir: "" },
-    { kind: "page", routePath: "/files/*slug", params: ["slug"], routeDir: "" }
+    { kind: "page", routeId: "/files/static", routePath: "/files/static", params: [], routeDir: "" },
+    { kind: "page", routeId: "/files/:id", routePath: "/files/:id", params: ["id"], routeDir: "" },
+    { kind: "page", routeId: "/files/*slug", routePath: "/files/*slug", params: ["slug"], routeDir: "" }
   ]
 
   expect(matchRoute(manifest, "/files/static", "page")?.item.routePath).toBe("/files/static")

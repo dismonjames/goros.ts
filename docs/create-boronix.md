@@ -32,3 +32,5 @@ Database runtime support:
 --db postgres works with bun or node
 --db none     works with bun or node
 ```
+
+New projects use `app/routes/page.html` for `/`; no `app/routes/home` folder is generated.

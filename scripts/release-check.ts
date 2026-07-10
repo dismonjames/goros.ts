@@ -57,8 +57,8 @@ for (const pkgName of packages) {
     process.exit(1)
   }
 
-  if (pkg.version !== "0.6.0") {
-    console.error(`✖ version mismatch for ${pkgName}: expected 0.6.0, found ${pkg.version}`)
+  if (pkg.version !== "0.6.1") {
+    console.error(`✖ version mismatch for ${pkgName}: expected 0.6.1, found ${pkg.version}`)
     process.exit(1)
   }
 
@@ -107,15 +107,15 @@ for (const pkgName of packages) {
 console.log("✔ package metadata valid")
 console.log("✔ dist files found")
 
-// 5. Verify create templates use ^0.6.0
+// 5. Verify create templates use ^0.6.1
 const templatePkgPaths = [
   path.join(rootDir, "packages/create-boronix/src/templates/basic/package.json"),
   path.join(rootDir, "packages/create-boronix/src/templates/homework/package.json")
 ]
 for (const tplPath of templatePkgPaths) {
   const tplPkg = JSON.parse(readFileSync(tplPath, "utf8"))
-  if (tplPkg.dependencies?.boronix !== "^0.6.0") {
-    console.error(`✖ Template ${tplPath} does not use ^0.6.0 for boronix`)
+  if (tplPkg.dependencies?.boronix !== "^0.6.1") {
+    console.error(`✖ Template ${tplPath} does not use ^0.6.1 for boronix`)
     process.exit(1)
   }
   if (!tplPkg.scripts?.["doctor:production"] || tplPkg.scripts["doctor:production"] !== "boronix doctor --production") {
@@ -123,7 +123,7 @@ for (const tplPath of templatePkgPaths) {
     process.exit(1)
   }
 }
-console.log("✔ create templates use ^0.6.0")
+console.log("✔ create templates use ^0.6.1")
 
 // 6. Verify production docs exist
 const requiredDocs = [
@@ -140,7 +140,10 @@ const requiredDocs = [
   "docs/releases/v0.6.0-dev-server.md",
   "docs/releases/github-v0.6.0.md",
   "docs/dev-server.md",
-  "docs/reloading.md"
+  "docs/reloading.md",
+  "docs/migration-v0.6.1.md",
+  "docs/releases/v0.6.1-root-route.md",
+  "docs/releases/github-v0.6.1.md"
 ]
 for (const doc of requiredDocs) {
   if (!existsSync(path.join(rootDir, doc))) {
@@ -193,6 +196,23 @@ if (!devSources.includes("spawnDevChild") || !devSources.includes("broadcast-rel
   process.exit(1)
 }
 console.log("✔ isolated dev worker and cache-busting guard verified")
+
+// 11. Root routes are direct capsules; no source-level home-to-root mapping.
+for (const tplPath of [
+  path.join(rootDir, "packages/create-boronix/src/templates/basic"),
+  path.join(rootDir, "packages/create-boronix/src/templates/homework")
+]) {
+  if (!existsSync(path.join(tplPath, "app/routes/page.html")) || existsSync(path.join(tplPath, "app/routes/home"))) {
+    console.error(`✖ Template ${tplPath} does not use the direct root route convention`)
+    process.exit(1)
+  }
+}
+const conventionSrc = readFileSync(path.join(rootDir, "packages/boronix/src/scanner/file-convention.ts"), "utf8")
+if (conventionSrc.includes('segment !== "home"')) {
+  console.error("✖ legacy home-to-root route mapping remains")
+  process.exit(1)
+}
+console.log("✔ direct root route convention verified")
 
 console.log("✔ all release checks passed successfully")
 process.exit(0)

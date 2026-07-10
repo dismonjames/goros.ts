@@ -21,7 +21,7 @@ afterAll(() => {
 test("successful build writes and atomic replacement works", () => {
   const manifest1 = {
     version: 1 as const,
-    frameworkVersion: "0.6.0",
+    frameworkVersion: "0.6.1",
     createdAt: new Date().toISOString(),
     runtime: "bun" as const,
     mode: "production" as const,
@@ -60,7 +60,7 @@ test("failed build does not destroy old build output", () => {
   // Attempt to write an invalid manifest (which should fail validation)
   const invalidManifest = {
     version: 99 as any, // invalid version
-    frameworkVersion: "0.6.0",
+    frameworkVersion: "0.6.1",
     createdAt: new Date().toISOString(),
     runtime: "bun" as const,
     mode: "production" as const,

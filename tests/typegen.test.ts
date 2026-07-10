@@ -14,8 +14,8 @@ test("typegen command generates route types file", () => {
     writeFileSync(path.join(tempDir, "boronix.config.ts"), 'export default { runtime: "bun" };', "utf8")
     
     // Create routes capsules
-    mkdirSync(path.join(tempDir, "app/routes/home"), { recursive: true })
-    writeFileSync(path.join(tempDir, "app/routes/home/page.html"), "Home page", "utf8")
+    mkdirSync(path.join(tempDir, "app/routes"), { recursive: true })
+    writeFileSync(path.join(tempDir, "app/routes/page.html"), "Home page", "utf8")
 
     mkdirSync(path.join(tempDir, "app/routes/exercises/[id]"), { recursive: true })
     writeFileSync(path.join(tempDir, "app/routes/exercises/[id]/page.html"), "Exercise page", "utf8")

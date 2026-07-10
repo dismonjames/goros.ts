@@ -6,8 +6,8 @@ import os from "node:os"
 console.log("Running smoke pack test...")
 
 const rootDir = path.resolve(".")
-const boronixTar = path.join(rootDir, "packages/boronix/boronix-0.6.0.tgz")
-const createTar = path.join(rootDir, "packages/create-boronix/create-boronix-0.6.0.tgz")
+const boronixTar = path.join(rootDir, "packages/boronix/boronix-0.6.1.tgz")
+const createTar = path.join(rootDir, "packages/create-boronix/create-boronix-0.6.1.tgz")
 
 // Clean old tarballs if exist
 if (existsSync(boronixTar)) rmSync(boronixTar)
@@ -42,6 +42,10 @@ try {
   }
   if (!existsSync(path.join(appPath, "boronix.config.ts"))) {
     console.error("✖ Scaffolding boronix.config.ts missing")
+    process.exit(1)
+  }
+  if (!existsSync(path.join(appPath, "app", "routes", "page.html")) || existsSync(path.join(appPath, "app", "routes", "home"))) {
+    console.error("✖ Scaffold did not use the direct root route convention")
     process.exit(1)
   }
 
@@ -251,7 +255,7 @@ try {
     // Modify a server module. This must restart the isolated worker, not serve
     // a stale ESM export from the previous process.
     console.log("Modifying page.ts for isolated dev worker reload...")
-    const homePageTsPath = path.join(appPath, "app", "routes", "home", "page.ts")
+    const homePageTsPath = path.join(appPath, "app", "routes", "page.ts")
     writeFileSync(homePageTsPath, 'import { page } from "boronix"\n\nexport default page(() => ({ title: "worker-reload" }))\n', "utf8")
     let moduleReloaded = false
     for (let attempt = 0; attempt < 80; attempt++) {
@@ -270,7 +274,7 @@ try {
 
     // Modify page.html and verify content changes
     console.log("Modifying page.html for dev reload...")
-    const homePageHtmlPath = path.join(appPath, "app", "routes", "home", "page.html")
+    const homePageHtmlPath = path.join(appPath, "app", "routes", "page.html")
     const originalContent = readFileSync(homePageHtmlPath, "utf8")
     writeFileSync(homePageHtmlPath, originalContent + "\n<!-- dev reload test -->", "utf8")
 
@@ -353,7 +357,7 @@ try {
     stderr: "pipe"
   })
   try {
-    const nodeHomeModule = path.join(nodeAppPath, "app", "routes", "home", "page.ts")
+    const nodeHomeModule = path.join(nodeAppPath, "app", "routes", "page.ts")
     writeFileSync(nodeHomeModule, 'import { page } from "boronix"\n\nexport default page(() => ({ title: `${process.release.name}:${typeof Bun}` }))\n', "utf8")
     let nodeReady = false
     for (let attempt = 0; attempt < 100; attempt++) {

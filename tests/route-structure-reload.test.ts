@@ -11,8 +11,8 @@ import type { DevFileChange } from "../packages/boronix/src/dev/types"
 function createTempApp(): string {
   const root = path.join(os.tmpdir(), `boronix-struct-${Date.now()}-${Math.random().toString(36).slice(2)}`)
   const routes = path.join(root, "app", "routes")
-  mkdirSync(path.join(routes, "home"), { recursive: true })
-  writeFileSync(path.join(routes, "home", "page.html"), "<h1>Home</h1>")
+  mkdirSync(routes, { recursive: true })
+  writeFileSync(path.join(routes, "page.html"), "<h1>Home</h1>")
   return root
 }
 
@@ -126,9 +126,9 @@ test("api file add is detected in route table", async () => {
     onReload: () => {}
   })
 
-  writeFileSync(path.join(root, "app", "routes", "home", "api.ts"), `export const GET = async () => new Response("ok")`)
+  writeFileSync(path.join(root, "app", "routes", "api.ts"), `export const GET = async () => new Response("ok")`)
 
-  await reloader.handleChanges([makeChange("app/routes/home/api.ts", "create", "route-module", root)])
+  await reloader.handleChanges([makeChange("app/routes/api.ts", "create", "route-module", root)])
 
   const newManifest = reloader.getManifest()
   expect(newManifest.some(r => r.kind === "api" && r.apiPath === "/api")).toBe(true)

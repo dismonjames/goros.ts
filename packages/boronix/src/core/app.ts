@@ -75,7 +75,7 @@ export function createBoronixApp(options: BoronixAppOptions): { fetch(req: Reque
           const res = json({
             status: "ok",
             framework: "boronix",
-            version: "0.6.0"
+            version: "0.6.1"
           })
           const finalResponse = commitSession(res, session)
           return applyResponseHeaders(finalResponse, requestId, !!options.dev, options.config)

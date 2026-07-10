@@ -1,6 +1,6 @@
 # Development Reloading
 
-Boronix v0.6.0 introduces HMR-lite: fast server reload + precise browser refresh.
+Boronix v0.6.1 provides HMR-lite: fast server reload + precise browser refresh.
 
 ## How It Works
 

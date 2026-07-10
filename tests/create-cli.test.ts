@@ -21,7 +21,7 @@ test("create generator CLI outputs valid project files", () => {
     // Verify file existence
     expect(existsSync(path.join(appPath, "package.json"))).toBe(true)
     expect(existsSync(path.join(appPath, "boronix.config.ts"))).toBe(true)
-    expect(existsSync(path.join(appPath, "app/routes/home/page.html"))).toBe(true)
+    expect(existsSync(path.join(appPath, "app/routes/page.html"))).toBe(true)
 
     // Verify scripts
     const pkg = JSON.parse(readFileSync(path.join(appPath, "package.json"), "utf8"))

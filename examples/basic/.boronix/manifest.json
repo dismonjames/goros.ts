@@ -1,13 +1,23 @@
 {
   "version": 1,
-  "frameworkVersion": "0.6.0",
-  "createdAt": "2026-07-10T08:45:30.040Z",
+  "frameworkVersion": "0.6.1",
+  "createdAt": "2026-07-10T10:21:14.709Z",
   "runtime": "bun",
   "mode": "production",
   "root": "/home/minh/Documents/boronix.ts/examples/basic",
   "routes": [
     {
       "kind": "page",
+      "routeId": "/",
+      "routePath": "/",
+      "params": [],
+      "routeDir": "/home/minh/Documents/boronix.ts/examples/basic/app/routes",
+      "pageHtml": "/home/minh/Documents/boronix.ts/examples/basic/app/routes/page.html",
+      "pageModule": "/home/minh/Documents/boronix.ts/examples/basic/app/routes/page.ts"
+    },
+    {
+      "kind": "page",
+      "routeId": "/exercises",
       "routePath": "/exercises",
       "params": [],
       "routeDir": "/home/minh/Documents/boronix.ts/examples/basic/app/routes/exercises",
@@ -16,6 +26,7 @@
     },
     {
       "kind": "api",
+      "routeId": "/exercises",
       "routePath": "/exercises",
       "apiPath": "/api/exercises",
       "params": [],
@@ -24,6 +35,7 @@
     },
     {
       "kind": "page",
+      "routeId": "/login",
       "routePath": "/login",
       "params": [],
       "routeDir": "/home/minh/Documents/boronix.ts/examples/basic/app/routes/login",
@@ -33,14 +45,7 @@
     },
     {
       "kind": "page",
-      "routePath": "/",
-      "params": [],
-      "routeDir": "/home/minh/Documents/boronix.ts/examples/basic/app/routes/home",
-      "pageHtml": "/home/minh/Documents/boronix.ts/examples/basic/app/routes/home/page.html",
-      "pageModule": "/home/minh/Documents/boronix.ts/examples/basic/app/routes/home/page.ts"
-    },
-    {
-      "kind": "page",
+      "routeId": "/exercises/:id",
       "routePath": "/exercises/:id",
       "params": [
         "id"

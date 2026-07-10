@@ -12,13 +12,13 @@ test("serves pages api and dynamic routes", async () => {
   const routes = path.join(root, "app", "routes")
   const kumquatImport = pathToFileURL(path.resolve("packages/boronix/src/index.ts")).href
 
-  mkdirSync(path.join(routes, "home"), { recursive: true })
+  mkdirSync(routes, { recursive: true })
   mkdirSync(path.join(routes, "exercises", "[id]"), { recursive: true })
   mkdirSync(path.join(root, "public"), { recursive: true })
 
   writeFileSync(path.join(root, "app", "layout.html"), "<html><body>{{ body }}</body></html>")
-  writeFileSync(path.join(routes, "home", "page.html"), "<h1>{{ title }}</h1>")
-  writeFileSync(path.join(routes, "home", "page.ts"), `import { page } from '${kumquatImport}'; export default page(async () => ({ title: 'Home' }))`)
+  writeFileSync(path.join(routes, "page.html"), "<h1>{{ title }}</h1>")
+  writeFileSync(path.join(routes, "page.ts"), `import { page } from '${kumquatImport}'; export default page(async () => ({ title: 'Home' }))`)
   writeFileSync(path.join(routes, "exercises", "api.ts"), `import { api, json } from '${kumquatImport}'; export const GET = api(async () => json({ exercises: [{ id: '1' }] }))`)
   writeFileSync(path.join(routes, "exercises", "[id]", "page.html"), "<h1>{{ id }}</h1>")
   writeFileSync(path.join(routes, "exercises", "[id]", "page.ts"), `import { page } from '${kumquatImport}'; export default page(async ({ params }) => ({ id: params.id }))`)

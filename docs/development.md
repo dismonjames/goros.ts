@@ -24,8 +24,8 @@ Dev reload testing:
 
 ```bash
 bun run dev:basic --debug-watch
-# Edit app/routes/home/page.html and save — browser refreshes; child PID stays stable
-# Edit app/routes/home/page.ts and save — isolated child restarts and loads new code
+# Edit app/routes/page.html and save — browser refreshes; child PID stays stable
+# Edit app/routes/page.ts and save — isolated child restarts and loads new code
 # Add app/routes/about/page.html — new route appears
 # Delete the route — 404 is served
 ```

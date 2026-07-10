@@ -16,7 +16,7 @@ export async function startDevServer(root: string, runtimeOverride?: ResolvedBor
   if (manifest.length === 0) {
     throw new BoronixUserError("No routes found.", {
       file: config.app.routesDir,
-      hint: "Create at least one route capsule like app/routes/home/page.html."
+      hint: "Create a route capsule like app/routes/page.html or app/routes/login/page.html."
     })
   }
   const app = createBoronixApp({ root, config, manifest, dev: true })
