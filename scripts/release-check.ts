@@ -57,8 +57,8 @@ for (const pkgName of packages) {
     process.exit(1)
   }
 
-  if (pkg.version !== "0.4.0") {
-    console.error(`✖ version mismatch for ${pkgName}: expected 0.4.0, found ${pkg.version}`)
+  if (pkg.version !== "0.4.1") {
+    console.error(`✖ version mismatch for ${pkgName}: expected 0.4.1, found ${pkg.version}`)
     process.exit(1)
   }
 

@@ -8,7 +8,7 @@ test("boronix package metadata", () => {
 
   const pkg = JSON.parse(readFileSync(pkgPath, "utf8"))
   expect(pkg.name).toBe("boronix")
-  expect(pkg.version).toBe("0.4.0")
+  expect(pkg.version).toBe("0.4.1")
   expect(pkg.license).toBe("MPL-2.0")
   expect(pkg.bin.boronix).toBe("dist/cli/main.js")
   expect(pkg.exports["."].import).toBe("./dist/index.js")
@@ -24,7 +24,7 @@ test("create-boronix package metadata", () => {
 
   const pkg = JSON.parse(readFileSync(pkgPath, "utf8"))
   expect(pkg.name).toBe("create-boronix")
-  expect(pkg.version).toBe("0.4.0")
+  expect(pkg.version).toBe("0.4.1")
   expect(pkg.license).toBe("MPL-2.0")
   expect(pkg.bin["create-boronix"]).toBe("dist/index.js")
   expect(pkg.files).toContain("dist")

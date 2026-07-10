@@ -157,11 +157,11 @@ async function run() {
       pkg.scripts["db:seed"] = "boronix db seed"
     }
 
-    // Set boronix version to ^0.4.0
+    // Set boronix version to ^0.4.1
     if (pkg.dependencies) {
       if (pkg.dependencies.boronix) delete pkg.dependencies.boronix
       if (pkg.dependencies["@boronix-ts/boronix"]) delete pkg.dependencies["@boronix-ts/boronix"]
-      pkg.dependencies["boronix"] = "^0.4.0"
+      pkg.dependencies["boronix"] = "^0.4.1"
       if (db === "sqlite") {
         pkg.dependencies["drizzle-orm"] = "latest"
         pkg.dependencies["@libsql/client"] = "latest"

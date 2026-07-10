@@ -42,7 +42,7 @@ test("create-boronix --db sqlite creates Drizzle SQLite files and scripts", () =
     expect(readFileSync(path.join(appPath, ".env.example"), "utf8")).toContain("DATABASE_URL=./local.db")
 
     const pkg = JSON.parse(readFileSync(path.join(appPath, "package.json"), "utf8"))
-    expect(pkg.dependencies.boronix).toBe("^0.4.0")
+    expect(pkg.dependencies.boronix).toBe("^0.4.1")
     expect(pkg.dependencies["drizzle-orm"]).toBe("latest")
     expect(pkg.devDependencies["drizzle-kit"]).toBe("latest")
     expect(pkg.devDependencies["@types/bun"]).toBe("latest")

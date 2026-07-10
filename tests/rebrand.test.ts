@@ -17,7 +17,7 @@ test("templates config and package scripts reference boronix", () => {
   expect(basicPkg.scripts.dev).toBe("boronix dev")
   expect(basicPkg.scripts.build).toBe("boronix build")
   expect(basicPkg.scripts.start).toBe("boronix start")
-  expect(basicPkg.dependencies.boronix).toBe("^0.4.0")
+  expect(basicPkg.dependencies.boronix).toBe("^0.4.1")
 
   const basicConfig = path.resolve("packages/create-boronix/src/templates/basic/boronix.config.ts")
   expect(existsSync(basicConfig)).toBe(true)

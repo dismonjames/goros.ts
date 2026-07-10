@@ -1,6 +1,6 @@
 {
   "name": "boronix",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "HTML-first fullstack framework for TypeScript.",
   "type": "module",
   "license": "MPL-2.0",

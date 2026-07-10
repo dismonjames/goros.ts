@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## v0.4.1 - Dev Error Overlay Polish
+
+- Refined the development error overlay with a more polished dark modal layout.
+- Added subtle SVG iconography for the runtime error headline, source panel, diagnostics, and error message banner.
+- Improved source frame readability, diagnostic cards, spacing, borders, shadows, and mobile responsiveness.
+
 ## v0.4.0 - Database DX With Drizzle
 
 - Added `create-boronix --db none|sqlite|postgres`.
