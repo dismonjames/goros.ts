@@ -255,37 +255,110 @@ function escapeHtml(str: string): string {
 }
 
 export function renderDevErrorPage(diagnostic: BoronixDiagnostic): string {
-  const hintsList = (diagnostic.hints ?? []).map(h => `<li>${escapeHtml(h)}</li>`).join("")
-  const hintsHtml = (diagnostic.hints && diagnostic.hints.length > 0)
-    ? `<div class="hints">
-        <h3>Suggestions / Hints</h3>
-        <ul>${hintsList}</ul>
-       </div>`
+  const formattedCodeFrame = diagnostic.codeFrame
+    ? escapeHtml(diagnostic.codeFrame)
+        .split("\n")
+        .map(line => {
+          const parts = line.split("|")
+          if (parts.length > 1) {
+            const prefix = parts[0] ?? ""
+            const code = parts.slice(1).join("|")
+            if (prefix.includes("&gt;")) {
+              const styledPrefix = prefix
+                .replace(/&gt;/, '<span class="caret-indicator">&gt;</span>')
+                .replace(/(\d+)/, '<span class="active-line-num">$1</span>')
+              const styledCode = code
+                .replace(/\^/g, '<span class="caret-pointer">^</span>')
+                .replace(/\b(const|let|var|function|return|import|export|default|async|await|from|class|extends)\b/g, '<span class="keyword">$1</span>')
+              return `${styledPrefix}|${styledCode}`
+            } else {
+              const styledPrefix = prefix
+                .replace(/(\d+)/, '<span class="line-number">$1</span>')
+              const styledCode = code
+                .replace(/\^/g, '<span class="caret-pointer">^</span>')
+                .replace(/\b(const|let|var|function|return|import|export|default|async|await|from|class|extends)\b/g, '<span class="keyword">$1</span>')
+              return `${styledPrefix}|${styledCode}`
+            }
+          }
+          return line.replace(/\^/g, '<span class="caret-pointer">^</span>')
+        })
+        .join("\n")
     : ""
 
   const codeFrameHtml = diagnostic.codeFrame
-    ? `<div class="code-frame">
-        <div class="code-frame-title">${escapeHtml(diagnostic.file ?? "")}</div>
-        <pre><code>${escapeHtml(diagnostic.codeFrame)}</code></pre>
+    ? `<div class="section-title">Source</div>
+       <div class="source-box">
+         <div class="source-header">
+           <span class="source-path">${escapeHtml(diagnostic.file ?? "source_code")}</span>
+           <span class="source-link">
+             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+           </span>
+         </div>
+         <pre><code>${formattedCodeFrame}</code></pre>
        </div>`
     : ""
 
-  const matchedPatternHtml = diagnostic.pattern
-    ? `<div class="meta-item"><span class="meta-label">Pattern:</span> <code class="meta-val">${escapeHtml(diagnostic.pattern)}</code></div>`
-    : ""
+  const diagCards: string[] = []
+  if (diagnostic.route) {
+    diagCards.push(`
+      <div class="diagnostic-card">
+        <span class="diag-label">Route Path</span>
+        <span class="diag-val">${escapeHtml(diagnostic.route)}</span>
+      </div>
+    `)
+  }
+  if (diagnostic.pattern) {
+    diagCards.push(`
+      <div class="diagnostic-card">
+        <span class="diag-label">Route Pattern</span>
+        <span class="diag-val">${escapeHtml(diagnostic.pattern)}</span>
+      </div>
+    `)
+  }
+  diagCards.push(`
+    <div class="diagnostic-card">
+      <span class="diag-label">Execution Phase</span>
+      <span class="diag-val badge">${escapeHtml(diagnostic.phase)}</span>
+    </div>
+  `)
+  if (diagnostic.action) {
+    diagCards.push(`
+      <div class="diagnostic-card">
+        <span class="diag-label">Mapped Action</span>
+        <span class="diag-val">${escapeHtml(diagnostic.action)}</span>
+      </div>
+    `)
+  }
 
-  const sourceFileHtml = diagnostic.file
-    ? `<div class="meta-item"><span class="meta-label">Source File:</span> <code class="meta-val">${escapeHtml(diagnostic.file)}</code></div>`
-    : ""
-
-  const actionHtml = diagnostic.action
-    ? `<div class="meta-item"><span class="meta-label">Action:</span> <code class="meta-val">${escapeHtml(diagnostic.action)}</code></div>`
+  const diagnosticGridHtml = diagCards.length > 0
+    ? `<div class="section-title">Diagnostics</div>
+       <div class="diagnostic-grid">
+         ${diagCards.join("")}
+       </div>`
     : ""
 
   const stackHtml = diagnostic.stack
-    ? `<div class="stack-trace">
-        <h3>Stack Trace</h3>
-        <pre><code>${escapeHtml(diagnostic.stack)}</code></pre>
+    ? `<div class="section-title">Call Stack</div>
+       <div class="source-box">
+         <div class="source-header" style="border-bottom: none;">
+           <span class="source-path">Stack Trace</span>
+         </div>
+         <div class="stack-box">
+           <pre class="stack-pre"><code>${escapeHtml(diagnostic.stack)
+             .replace(/(at\s+\S+\s+)\((app\/[^\)]+)\)/g, '$1(<span class="user-file">$2</span>)')
+             .replace(/(at\s+)\((app\/[^\)]+)\)/g, '$1(<span class="user-file">$2</span>)')}</code></pre>
+         </div>
+       </div>`
+    : ""
+
+  const hintsList = (diagnostic.hints ?? []).map(h => `<li>${escapeHtml(h)}</li>`).join("")
+  const hintsHtml = (diagnostic.hints && diagnostic.hints.length > 0)
+    ? `<div class="hints-section">
+        <div class="hints-header">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"></path><line x1="9" y1="18" x2="15" y2="18"></line><line x1="10" y1="22" x2="14" y2="22"></line></svg>
+          <h3>Suggestions & Hints</h3>
+        </div>
+        <ul>${hintsList}</ul>
        </div>`
     : ""
 
@@ -294,163 +367,283 @@ export function renderDevErrorPage(diagnostic: BoronixDiagnostic): string {
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Boronix Error</title>
+  <title>Boronix Dev Error</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background: #0f172a;
-      color: #f1f5f9;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #030303;
+      background-image: 
+        radial-gradient(circle at 50% 30%, rgba(239, 68, 68, 0.08), transparent 60%),
+        radial-gradient(circle at 10% 80%, rgba(56, 189, 248, 0.05), transparent 50%);
+      color: #e4e4e7;
       margin: 0;
-      padding: 40px;
+      padding: 40px 20px;
+      min-height: 100vh;
       box-sizing: border-box;
-      line-height: 1.5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    .container {
-      max-width: 1000px;
-      margin: 0 auto;
+    .error-modal {
+      width: 100%;
+      max-width: 900px;
+      background: #0c0c0e;
+      border: 1px solid #1e1e24;
+      border-top: 3px solid #ef4444;
+      border-radius: 12px;
+      box-shadow: 0 40px 80px rgba(0, 0, 0, 0.8), 0 0 1px rgba(255, 255, 255, 0.1) inset;
+      padding: 30px;
+      box-sizing: border-box;
     }
-    .header {
-      border-bottom: 2px solid #f43f5e;
-      padding-bottom: 20px;
-      margin-bottom: 30px;
+    .modal-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
     }
-    .brand {
-      color: #f43f5e;
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .nav-arrows {
+      display: flex;
+      gap: 4px;
+    }
+    .arrow-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 5px;
+      background: #141416;
+      border: 1px solid #222227;
+      color: #44444f;
+      cursor: pointer;
+    }
+    .arrow-btn.active {
+      color: #88888f;
+    }
+    .error-count {
+      font-size: 0.8rem;
+      color: #6e6e77;
+      font-weight: 500;
+    }
+    .close-btn {
+      background: none;
+      border: none;
+      color: #71717a;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+      transition: color 0.15s ease;
+    }
+    .close-btn:hover {
+      color: #ffffff;
+    }
+    .error-title {
+      font-size: 1.25rem;
       font-weight: 700;
-      font-size: 1.1rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      margin-bottom: 8px;
+      color: #ffffff;
+      margin: 0 0 14px 0;
+      letter-spacing: -0.01em;
     }
-    h1 {
-      margin: 0;
-      font-size: 2.2rem;
-      color: #fff;
-      font-weight: 800;
+    .error-banner {
+      background: rgba(239, 68, 68, 0.08);
+      border-left: 3px solid #ef4444;
+      padding: 14px 18px;
+      border-radius: 6px;
+      color: #fca5a5;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      font-weight: 500;
+      line-height: 1.5;
+      margin-bottom: 24px;
       word-break: break-word;
     }
-    .meta-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 15px;
-      background: #1e293b;
-      padding: 20px;
-      border-radius: 8px;
-      margin-bottom: 30px;
-      border: 1px solid #334155;
-    }
-    .meta-item {
-      display: flex;
-      flex-direction: column;
-    }
-    .meta-label {
-      color: #94a3b8;
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 4px;
-    }
-    .meta-val {
-      color: #e2e8f0;
+    .section-title {
       font-size: 0.95rem;
       font-weight: 600;
+      color: #ffffff;
+      margin: 24px 0 10px 0;
     }
-    code.meta-val {
-      background: #0f172a;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 0.85em;
-      color: #38bdf8;
-      align-self: flex-start;
-      word-break: break-all;
-    }
-    .code-frame {
-      background: #0f172a;
-      border: 1px solid #334155;
+    .source-box {
+      border: 1px solid #1e1e24;
       border-radius: 8px;
-      margin-bottom: 30px;
       overflow: hidden;
+      background: #050507;
     }
-    .code-frame-title {
-      background: #1e293b;
-      padding: 10px 20px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 0.85rem;
-      border-bottom: 1px solid #334155;
-      color: #cbd5e1;
+    .source-header {
+      background: #0e0e11;
+      padding: 8px 16px;
+      border-bottom: 1px solid #1e1e24;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .source-path {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: #a1a1aa;
+    }
+    .source-link {
+      color: #71717a;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+    .source-link:hover {
+      color: #fff;
     }
     pre {
       margin: 0;
-      padding: 20px;
+      padding: 16px;
       overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      color: #e4e4e7;
     }
-    code {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 0.9rem;
+    .line-number {
+      color: #52525b;
     }
-    .code-frame code {
-      color: #e2e8f0;
+    .active-line-num {
+      color: #ef4444;
+      font-weight: 600;
     }
-    .code-frame pre {
-      background: #0f172a;
+    .caret-indicator {
+      color: #ef4444;
+      font-weight: 600;
     }
-    .hints {
-      background: #172554;
-      border: 1px solid #1e3a8a;
-      padding: 20px;
-      border-radius: 8px;
-      margin-bottom: 30px;
+    .caret-pointer {
+      color: #ef4444;
+      font-weight: 700;
     }
-    .hints h3 {
-      margin-top: 0;
-      color: #60a5fa;
-      font-size: 1.1rem;
+    .keyword {
+      color: #38bdf8;
     }
-    .hints ul {
-      margin: 0;
-      padding-left: 20px;
-      color: #93c5fd;
+    .string {
+      color: #34d399;
     }
-    .hints li {
+    .diagnostic-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
       margin-bottom: 8px;
     }
-    .stack-trace {
-      background: #1e293b;
-      border: 1px solid #334155;
+    .diagnostic-card {
+      background: #0e0e11;
+      border: 1px solid #1e1e24;
       border-radius: 8px;
-      padding: 20px;
+      padding: 10px 14px;
     }
-    .stack-trace h3 {
-      margin-top: 0;
-      color: #cbd5e1;
-      border-bottom: 1px solid #334155;
-      padding-bottom: 10px;
+    .diag-label {
+      color: #71717a;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      display: block;
+      margin-bottom: 2px;
     }
-    .stack-trace code {
-      color: #f1f5f9;
+    .diag-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: #e4e4e7;
+      word-break: break-all;
+    }
+    .diag-val.badge {
+      color: #ef4444;
+      background: rgba(239, 68, 68, 0.08);
+      border: 1px solid rgba(239, 68, 68, 0.15);
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+    }
+    .stack-box {
+      background: #050507;
+      border: 1px solid #1e1e24;
+      border-radius: 8px;
+      padding: 14px 18px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .stack-pre {
+      margin: 0;
+      padding: 0;
+      font-size: 0.8rem;
+      line-height: 1.7;
+      color: #71717a;
+    }
+    .user-file {
+      color: #ef4444;
+      font-weight: 500;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+    .hints-section {
+      background: #0e0e11;
+      border: 1px solid #1e1e24;
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin-top: 20px;
+    }
+    .hints-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #38bdf8;
+      margin-bottom: 10px;
+    }
+    .hints-header h3 {
+      margin: 0;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    .hints-section ul {
+      margin: 0;
+      padding-left: 20px;
+      color: #a1a1aa;
       font-size: 0.85rem;
+    }
+    .hints-section li {
+      margin-bottom: 6px;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <div class="brand">Boronix Dev Error</div>
-      <h1>${escapeHtml(diagnostic.message)}</h1>
+  <div class="error-modal">
+    <div class="modal-nav">
+      <div class="nav-left">
+        <div class="nav-arrows">
+          <button class="arrow-btn" disabled>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          </button>
+          <button class="arrow-btn" disabled>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </button>
+        </div>
+        <span class="error-count">1 of 1 error</span>
+      </div>
+      <button class="close-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
     </div>
 
-    <div class="meta-grid">
-      <div class="meta-item"><span class="meta-label">Route:</span> <code class="meta-val">${escapeHtml(diagnostic.route ?? "")}</code></div>
-      ${matchedPatternHtml}
-      <div class="meta-item"><span class="meta-label">Phase:</span> <code class="meta-val">${escapeHtml(diagnostic.phase)}</code></div>
-      ${sourceFileHtml}
-      ${actionHtml}
+    <h2 class="error-title">Unhandled Runtime Error</h2>
+    <div class="error-banner">
+      ${escapeHtml(diagnostic.message)}
     </div>
 
-    ${hintsHtml}
     ${codeFrameHtml}
+    ${diagnosticGridHtml}
     ${stackHtml}
+    ${hintsHtml}
   </div>
 </body>
 </html>
