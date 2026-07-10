@@ -4,6 +4,7 @@
     "noEmit": true,
     "types": ["node"],
     "paths": {
+      "boronix": ["./packages/boronix/src/index.ts"],
       "bun:test": ["./tests/bun-test-compat.ts"]
     }
   },
