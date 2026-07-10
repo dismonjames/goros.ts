@@ -73,7 +73,7 @@ export async function inspectCommand(
       }
       let hasAction = false
       try {
-        const mod = await import(pathToFileURL(item.actionsModule).href + `?t=${Date.now()}`)
+        const mod = await import(pathToFileURL(item.actionsModule).href)
         hasAction = typeof mod[actionName!] === "function"
       } catch {
         const content = readFileSync(item.actionsModule, "utf8")

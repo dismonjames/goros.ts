@@ -49,7 +49,8 @@ test("handleDevOrErrorPageResponse returns 500 response without leak in prod", (
         session: { name: "kq_session", secret: "123", maxAge: 3600, sameSite: "lax", secure: false },
         cli: { color: true, unicode: true, requestLog: true, groupRoutes: true },
         health: { enabled: false, path: "/health" },
-        security: { headers: true }
+        security: { headers: true },
+        dev: { reload: true, watch: { debounce: 50 } }
       }
     }
   )
@@ -82,7 +83,8 @@ test("handleDevOrErrorPageResponse uses polished dev overlay in dev mode", async
         session: { name: "kq_session", secret: "123", maxAge: 3600, sameSite: "lax", secure: false },
         cli: { color: true, unicode: true, requestLog: true, groupRoutes: true },
         health: { enabled: false, path: "/health" },
-        security: { headers: true }
+        security: { headers: true },
+        dev: { reload: true, watch: { debounce: 50 } }
       }
     }
   )

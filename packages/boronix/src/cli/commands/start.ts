@@ -1,5 +1,4 @@
-import { existsSync, readFileSync } from "node:fs"
-import { pathToFileURL } from "node:url"
+import { existsSync } from "node:fs"
 import path from "node:path"
 import { loadConfig } from "../../config/load-config"
 import type { ResolvedBoronixConfig } from "../../config/types"
@@ -50,20 +49,10 @@ export async function startCommand(
   // 3. Resolve port and host priority: CLI flags -> config -> environment variables -> defaults
   const config = await loadConfig(resolvedRoot)
 
-  let configHost: string | undefined
-  let configPort: number | undefined
-  const configPath = path.join(resolvedRoot, "boronix.config.ts")
-  if (existsSync(configPath)) {
-    try {
-      const module = await import(`${pathToFileURL(configPath).href}?t=${Date.now()}`)
-      configHost = module.default?.server?.host
-      configPort = module.default?.server?.port
-    } catch {}
-  }
-
-  const resolvedHost = options.host ?? configHost ?? process.env.BORONIX_HOST ?? process.env.HOST ?? "0.0.0.0"
+  const hasConfig = existsSync(path.join(resolvedRoot, "boronix.config.ts"))
+  const resolvedHost = options.host ?? (hasConfig ? config.server.host : undefined) ?? process.env.BORONIX_HOST ?? process.env.HOST ?? "0.0.0.0"
   const envPort = process.env.BORONIX_PORT ?? process.env.PORT
-  const resolvedPort = options.port ?? configPort ?? (envPort ? parseInt(envPort, 10) : undefined) ?? 3000
+  const resolvedPort = options.port ?? (hasConfig ? config.server.port : undefined) ?? (envPort ? parseInt(envPort, 10) : undefined) ?? 3000
 
   config.server.host = resolvedHost
   config.server.port = resolvedPort

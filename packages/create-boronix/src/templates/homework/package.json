@@ -12,7 +12,7 @@
     "typegen": "boronix typegen"
   },
   "dependencies": {
-    "boronix": "^0.5.0"
+    "boronix": "^0.6.0"
   },
-  "version": "0.5.0"
+  "version": "0.6.0"
 }

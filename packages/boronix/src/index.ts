@@ -3,6 +3,7 @@ export { page } from "./route/page"
 export { api } from "./route/api"
 export { action } from "./route/action"
 export { json, redirect, notFound, fail, htmlResponse } from "./core/response"
+export { invalidateTemplate, invalidateRouteTemplates, clearTemplateCache } from "./render/template"
 
 export type { BoronixConfig } from "./config/types"
 export type { PageContext, PageHandler } from "./route/page"

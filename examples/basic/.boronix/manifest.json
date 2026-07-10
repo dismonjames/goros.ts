@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "frameworkVersion": "0.5.0",
-  "createdAt": "2026-07-10T07:08:08.242Z",
+  "frameworkVersion": "0.6.0",
+  "createdAt": "2026-07-10T08:45:30.040Z",
   "runtime": "bun",
   "mode": "production",
   "root": "/home/minh/Documents/boronix.ts/examples/basic",

@@ -123,9 +123,22 @@ SQLite requires `--runtime bun` because the template uses `bun:sqlite`; Postgres
   ✔ runtime   bun
   ➜ local     http://localhost:3000
   ⌂ root      ~/my-app
+  ◇ reload    enabled
 
 ✔ ready, serving HTML in 58ms
 ```
+
+## Fast development reload
+
+Run:
+
+```bash
+npm run dev
+```
+
+Boronix watches pages, layouts, route modules, shared server code and public assets. Template/public changes refresh through SSE without restarting the server child; server TypeScript changes use an isolated child restart so stale ESM module caches cannot survive.
+
+Boronix uses full-page refresh rather than a hydration-based client runtime.
 
 ### Build tree
 

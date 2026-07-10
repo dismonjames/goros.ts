@@ -1,6 +1,6 @@
 {
   "name": "boronix",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "HTML-first fullstack framework for TypeScript.",
   "type": "module",
   "license": "MPL-2.0",
@@ -37,7 +37,7 @@
     "url": "https://github.com/dismonjames/boronix.ts/issues"
   },
   "scripts": {
-    "build": "rm -rf ./dist && bun build ./src/index.ts ./src/cli/main.ts --outdir ./dist --target bun && tsc -p tsconfig.json --emitDeclarationOnly",
+    "build": "rm -rf ./dist && bun build ./src/index.ts ./src/cli/main.ts ./src/dev/worker.ts --outdir ./dist --target bun && tsc -p tsconfig.json --emitDeclarationOnly",
     "typecheck": "tsc --noEmit"
   }
 }

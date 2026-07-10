@@ -10,7 +10,7 @@ test("basic template contains correct package version and scripts", () => {
   expect(fs.existsSync(pkgPath)).toBe(true)
 
   const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"))
-  expect(pkg.dependencies.boronix).toBe("^0.5.0")
+  expect(pkg.dependencies.boronix).toBe("^0.6.0")
   expect(pkg.scripts["doctor:production"]).toBe("boronix doctor --production")
 })
 
@@ -19,7 +19,7 @@ test("homework template contains correct package version and env.example", () =>
   expect(fs.existsSync(pkgPath)).toBe(true)
 
   const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"))
-  expect(pkg.dependencies.boronix).toBe("^0.5.0")
+  expect(pkg.dependencies.boronix).toBe("^0.6.0")
   expect(pkg.scripts["doctor:production"]).toBe("boronix doctor --production")
 
   const envExPath = path.join(homeworkTemplateDir, ".env.example")

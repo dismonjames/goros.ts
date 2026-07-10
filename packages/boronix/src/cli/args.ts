@@ -18,6 +18,8 @@ export type CliArgs = {
   full: boolean
   flat: boolean
   production: boolean
+  noReload: boolean
+  debugWatch: boolean
   method?: string | undefined
   positionals: string[]
 }
@@ -41,6 +43,8 @@ export function parseCliArgs(argv: string[]): CliArgs {
   let full = false
   let flat = false
   let production = false
+  let noReload = false
+  let debugWatch = false
   let method: string | undefined = undefined
 
   for (let i = 0; i < args.length; i++) {
@@ -68,6 +72,10 @@ export function parseCliArgs(argv: string[]): CliArgs {
       flat = true
     } else if (arg === "--production") {
       production = true
+    } else if (arg === "--no-reload") {
+      noReload = true
+    } else if (arg === "--debug-watch") {
+      debugWatch = true
     } else if (arg === "--method") {
       const val = args[i + 1]
       if (val && !val.startsWith("-")) {
@@ -132,6 +140,8 @@ export function parseCliArgs(argv: string[]): CliArgs {
     full,
     flat,
     production,
+    noReload,
+    debugWatch,
     method,
     positionals
   }

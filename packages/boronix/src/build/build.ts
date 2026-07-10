@@ -39,7 +39,7 @@ export async function build(root: string, runtimeOverride?: ResolvedBoronixConfi
   const resolvedRoot = path.resolve(root)
   writeBuildOutput(root, {
     version: 1,
-    frameworkVersion: "0.5.0",
+    frameworkVersion: "0.6.0",
     createdAt: new Date().toISOString(),
     runtime: runtimeName as "bun" | "node",
     mode: "production",

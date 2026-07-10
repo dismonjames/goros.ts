@@ -80,3 +80,49 @@ This document outlines design and rebranding decisions made during version `v0.2
 - Chose option B for legacy `.boronix` manifests from v0.4.x: report `KQ_BUILD_VERSION_UNSUPPORTED` and require running `boronix build` again.
 - This is simpler and clearer than attempting migration/normalization of old manifests.
 
+## v0.6.0 Decisions
+
+### 1. SSE over WebSocket for Browser Refresh
+- Chose Server-Sent Events (SSE) over WebSocket for the browser reload channel.
+- SSE is simpler, unidirectional (server→browser), works with standard `EventSource`, and requires no client-side library.
+- The dev endpoint `/__boronix/dev-events` only exists in dev mode, never in production.
+
+### 2. Full-Page Refresh over HMR
+- Chose full-page refresh (`window.location.reload()`) over component-level HMR.
+- Boronix is HTML-first with no hydration system, so component-level state preservation is not applicable.
+- One batch of file changes produces at most one browser reload to avoid flicker.
+
+### 3. Isolated Child Restart for Module Reload
+- Bun caches ESM modules by physical path even when the import URL query changes, so query-string cache busting was rejected.
+- The long-lived supervisor owns watching, batching, terminal UI, and child lifecycle; the child owns HTTP, SSE, and user modules.
+- Route/shared/config/env changes replace the child process, releasing all server module state. Templates and public assets remain in-process and are served fresh from disk.
+- The browser EventSource reconnects after a child restart and performs exactly one full refresh for the new revision.
+
+### 4. Node fs.watch with Recursive Option
+- Chose Node.js `fs.watch` with `{ recursive: true }` over adding a third-party watcher dependency like `chokidar`.
+- `fs.watch` recursive is supported on macOS and Windows natively, and on Linux with Bun.
+- Debounce (50ms default) handles duplicate OS events and rapid consecutive saves.
+- No external dependency added, keeping the framework zero-dependency.
+
+### 5. Reload Failure: Keep Process Alive
+- On reload failure (e.g., TypeScript syntax error), the dev process stays alive.
+- The previous working app generation continues to serve requests until the next successful reload.
+- Reload errors are broadcast to the browser via SSE `error` events.
+- When the user fixes the error, the next reload succeeds and the app recovers automatically.
+- Chose option A (keep old generation) as the practical default because it avoids showing broken pages for unrelated routes.
+
+### 6. Dev Client Injection Strategy
+- Inject the dev client script before `</body>` (or append to end if no `</body>`).
+- Only inject into HTML responses (check `content-type`), not JSON, static assets, or redirects.
+- Guard against double injection via `window.__boronixDevClientConnected` flag and `data-boronix-dev-client` attribute check.
+- CSP policies that block inline scripts will prevent injection — documented as a known limitation, no workaround implemented.
+
+### 7. Reserved Dev Route Prefix
+- Reserved `/__boronix/dev-events` in dev mode only.
+- `KQ_DEV_ROUTE_CONFLICT` error if user has a route at this path.
+- Production does not reserve this path since the endpoint does not exist.
+
+### 8. Debounce Window
+- Default 50ms debounce, configurable via `dev.watch.debounce` (range 10–2000ms).
+- Multiple events for the same file within the window are coalesced into a single change.
+- A batch of changes across multiple files produces one reload event.

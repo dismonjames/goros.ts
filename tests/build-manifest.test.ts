@@ -38,7 +38,7 @@ test("valid manifest loads successfully", () => {
   const boronixDir = path.join(tmpManifestDir, ".boronix")
   const manifestData = {
     version: 1,
-    frameworkVersion: "0.5.0",
+    frameworkVersion: "0.6.0",
     createdAt: new Date().toISOString(),
     runtime: "bun",
     mode: "production",
@@ -58,7 +58,7 @@ test("valid manifest loads successfully", () => {
 test("runtime mismatch throws KQ_BUILD_RUNTIME_MISMATCH", () => {
   const manifestData = {
     version: 1,
-    frameworkVersion: "0.5.0",
+    frameworkVersion: "0.6.0",
     createdAt: new Date().toISOString(),
     runtime: "bun",
     mode: "production",

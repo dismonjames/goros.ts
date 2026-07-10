@@ -33,6 +33,12 @@ export type BoronixConfig = {
       frameOptions?: string
     }
   }
+  dev?: {
+    reload?: boolean
+    watch?: {
+      debounce?: number
+    }
+  }
 }
 
 export type ResolvedBoronixConfig = {
@@ -70,6 +76,12 @@ export type ResolvedBoronixConfig = {
       frameOptions?: string
     }
   }
+  dev: {
+    reload: boolean
+    watch: {
+      debounce: number
+    }
+  }
 }
 
 export const defaultConfig: ResolvedBoronixConfig = {
@@ -102,5 +114,11 @@ export const defaultConfig: ResolvedBoronixConfig = {
   },
   security: {
     headers: true
+  },
+  dev: {
+    reload: true,
+    watch: {
+      debounce: 50
+    }
   }
 }

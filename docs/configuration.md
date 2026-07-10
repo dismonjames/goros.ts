@@ -32,9 +32,22 @@ export default defineConfig({
       referrerPolicy: "strict-origin-when-cross-origin",
       frameOptions: "SAMEORIGIN"
     }
+  },
+  dev: {
+    reload: true,
+    watch: {
+      debounce: 50
+    }
   }
 })
 ```
+
+## Dev Configuration
+
+- `dev.reload` — Enable/disable browser auto-refresh during development (default: `true`).
+- `dev.watch.debounce` — File event debounce in milliseconds (default: `50`, range: `10–2000`).
+
+CLI flags `--no-reload` and `--debug-watch` take priority over config.
 
 ## Production Config Validation
 

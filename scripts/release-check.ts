@@ -57,8 +57,8 @@ for (const pkgName of packages) {
     process.exit(1)
   }
 
-  if (pkg.version !== "0.5.0") {
-    console.error(`✖ version mismatch for ${pkgName}: expected 0.5.0, found ${pkg.version}`)
+  if (pkg.version !== "0.6.0") {
+    console.error(`✖ version mismatch for ${pkgName}: expected 0.6.0, found ${pkg.version}`)
     process.exit(1)
   }
 
@@ -92,7 +92,7 @@ for (const pkgName of packages) {
 
   // Verify dist files exist
   const filesToCheck = pkgName === "boronix" 
-    ? ["dist/index.js", "dist/index.d.ts", "dist/cli/main.js"]
+    ? ["dist/index.js", "dist/index.d.ts", "dist/cli/main.js", "dist/dev/worker.js"]
     : ["dist/index.js", "dist/index.d.ts"]
 
   for (const file of filesToCheck) {
@@ -107,15 +107,15 @@ for (const pkgName of packages) {
 console.log("✔ package metadata valid")
 console.log("✔ dist files found")
 
-// 5. Verify create templates use ^0.5.0
+// 5. Verify create templates use ^0.6.0
 const templatePkgPaths = [
   path.join(rootDir, "packages/create-boronix/src/templates/basic/package.json"),
   path.join(rootDir, "packages/create-boronix/src/templates/homework/package.json")
 ]
 for (const tplPath of templatePkgPaths) {
   const tplPkg = JSON.parse(readFileSync(tplPath, "utf8"))
-  if (tplPkg.dependencies?.boronix !== "^0.5.0") {
-    console.error(`✖ Template ${tplPath} does not use ^0.5.0 for boronix`)
+  if (tplPkg.dependencies?.boronix !== "^0.6.0") {
+    console.error(`✖ Template ${tplPath} does not use ^0.6.0 for boronix`)
     process.exit(1)
   }
   if (!tplPkg.scripts?.["doctor:production"] || tplPkg.scripts["doctor:production"] !== "boronix doctor --production") {
@@ -123,7 +123,7 @@ for (const tplPath of templatePkgPaths) {
     process.exit(1)
   }
 }
-console.log("✔ create templates use ^0.5.0")
+console.log("✔ create templates use ^0.6.0")
 
 // 6. Verify production docs exist
 const requiredDocs = [
@@ -136,7 +136,11 @@ const requiredDocs = [
   "docs/session.md",
   "docs/doctor.md",
   "docs/releases/v0.5.0-production-hardening.md",
-  "docs/releases/github-v0.5.0.md"
+  "docs/releases/github-v0.5.0.md",
+  "docs/releases/v0.6.0-dev-server.md",
+  "docs/releases/github-v0.6.0.md",
+  "docs/dev-server.md",
+  "docs/reloading.md"
 ]
 for (const doc of requiredDocs) {
   if (!existsSync(path.join(rootDir, doc))) {
@@ -172,6 +176,23 @@ for (const pkgName of packages) {
   }
 }
 console.log("✔ package tarball includes dist/README/LICENSE")
+
+// 10. The isolated worker is the only supported server-module reload strategy.
+const devSources = [
+  "packages/boronix/src/core/app.ts",
+  "packages/boronix/src/config/load-config.ts",
+  "packages/boronix/src/dev/supervisor.ts",
+  "packages/boronix/src/dev/worker.ts"
+].map(file => readFileSync(path.join(rootDir, file), "utf8")).join("\n")
+if (/import\([^\n]*[?](?:t=|boronix_rev)/.test(devSources)) {
+  console.error("✖ legacy ESM cache-busting import found in production source")
+  process.exit(1)
+}
+if (!devSources.includes("spawnDevChild") || !devSources.includes("broadcast-reload")) {
+  console.error("✖ dev supervisor/worker protocol is incomplete")
+  process.exit(1)
+}
+console.log("✔ isolated dev worker and cache-busting guard verified")
 
 console.log("✔ all release checks passed successfully")
 process.exit(0)

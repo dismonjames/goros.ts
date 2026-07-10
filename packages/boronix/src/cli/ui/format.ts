@@ -38,6 +38,8 @@ export function formatCommandHelp(command: string): string {
   -o, --open          Open the browser automatically
   --quiet             Startup and errors output only
   --verbose           Detailed output with static asset requests
+  --no-reload         Disable browser auto-refresh and file watcher
+  --debug-watch       Print detailed file watch diagnostics
   --plain             Disable colors, unicode, and spinner
   --no-color          Disable colors`
   } else if (command === "start") {

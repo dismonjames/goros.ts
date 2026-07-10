@@ -6,8 +6,8 @@ import os from "node:os"
 console.log("Running smoke pack test...")
 
 const rootDir = path.resolve(".")
-const boronixTar = path.join(rootDir, "packages/boronix/boronix-0.5.0.tgz")
-const createTar = path.join(rootDir, "packages/create-boronix/create-boronix-0.5.0.tgz")
+const boronixTar = path.join(rootDir, "packages/boronix/boronix-0.6.0.tgz")
+const createTar = path.join(rootDir, "packages/create-boronix/create-boronix-0.6.0.tgz")
 
 // Clean old tarballs if exist
 if (existsSync(boronixTar)) rmSync(boronixTar)
@@ -178,6 +178,23 @@ try {
       process.exit(1)
     }
     console.log(`✔ Static asset Cache-Control: ${cacheControl}`)
+
+    // Verify dev SSE endpoint does NOT exist in production
+    console.log("Verifying /__boronix/dev-events not in production...")
+    const devEventsRes = await fetch(`http://localhost:${smokePort}/__boronix/dev-events`)
+    if (devEventsRes.status !== 404) {
+      console.error(`✖ Expected 404 for dev SSE endpoint in production, got ${devEventsRes.status}`)
+      process.exit(1)
+    }
+    console.log("✔ Dev SSE endpoint correctly absent in production")
+
+    // Verify production HTML does not contain dev client
+    const homeHtml = await fetch(`http://localhost:${smokePort}/`).then(r => r.text())
+    if (homeHtml.includes("data-boronix-dev-client")) {
+      console.error("✖ Production HTML contains dev client script")
+      process.exit(1)
+    }
+    console.log("✔ Production HTML clean of dev client")
   } finally {
     // Gracefully stop the server
     try {
@@ -186,6 +203,129 @@ try {
     await new Promise(resolve => setTimeout(resolve, 1000))
     try {
       process.kill(serverProc.pid, "SIGKILL")
+    } catch {}
+  }
+
+  // Dev server smoke test
+  console.log("Starting dev server smoke test...")
+  const devPort = 3998
+  const devProc = Bun.spawn({
+    cmd: ["bunx", "boronix", "dev", "--port", String(devPort), "--no-color"],
+    cwd: appPath,
+    stdout: "pipe",
+    stderr: "pipe",
+    env: { ...process.env, BORONIX_SESSION_SECRET: "smoke-test-secret" }
+  })
+
+  await new Promise(resolve => setTimeout(resolve, 3000))
+
+  try {
+    // Fetch / and verify dev client is injected
+    console.log("Fetching dev / ...")
+    const devHomeRes = await fetch(`http://localhost:${devPort}/`)
+    if (!devHomeRes.ok) {
+      console.error(`✖ Dev fetch / returned status ${devHomeRes.status}`)
+      process.exit(1)
+    }
+    const devHomeHtml = await devHomeRes.text()
+    if (!devHomeHtml.includes("data-boronix-dev-client")) {
+      console.error("✖ Dev HTML missing dev client injection")
+      process.exit(1)
+    }
+    console.log("✔ Dev client injection verified")
+
+    // Verify SSE endpoint exists in dev
+    console.log("Verifying dev SSE endpoint...")
+    const sseRes = await fetch(`http://localhost:${devPort}/__boronix/dev-events`)
+    if (sseRes.status !== 200) {
+      console.error(`✖ Dev SSE endpoint returned ${sseRes.status}`)
+      process.exit(1)
+    }
+    const sseContentType = sseRes.headers.get("content-type")
+    if (!sseContentType || !sseContentType.includes("text/event-stream")) {
+      console.error(`✖ Dev SSE content-type wrong: ${sseContentType}`)
+      process.exit(1)
+    }
+    console.log("✔ Dev SSE endpoint verified")
+
+    // Modify a server module. This must restart the isolated worker, not serve
+    // a stale ESM export from the previous process.
+    console.log("Modifying page.ts for isolated dev worker reload...")
+    const homePageTsPath = path.join(appPath, "app", "routes", "home", "page.ts")
+    writeFileSync(homePageTsPath, 'import { page } from "boronix"\n\nexport default page(() => ({ title: "worker-reload" }))\n', "utf8")
+    let moduleReloaded = false
+    for (let attempt = 0; attempt < 80; attempt++) {
+      const html = await fetch(`http://localhost:${devPort}/`).then(r => r.text()).catch(() => "")
+      if (html.includes("worker-reload")) {
+        moduleReloaded = true
+        break
+      }
+      await new Promise(resolve => setTimeout(resolve, 50))
+    }
+    if (!moduleReloaded) {
+      console.error("✖ Dev worker reload did not load the updated page.ts export")
+      process.exit(1)
+    }
+    console.log("✔ Dev isolated module reload verified")
+
+    // Modify page.html and verify content changes
+    console.log("Modifying page.html for dev reload...")
+    const homePageHtmlPath = path.join(appPath, "app", "routes", "home", "page.html")
+    const originalContent = readFileSync(homePageHtmlPath, "utf8")
+    writeFileSync(homePageHtmlPath, originalContent + "\n<!-- dev reload test -->", "utf8")
+
+    await new Promise(resolve => setTimeout(resolve, 1000))
+
+    const devHomeRes2 = await fetch(`http://localhost:${devPort}/`)
+    const devHomeHtml2 = await devHomeRes2.text()
+    if (!devHomeHtml2.includes("dev reload test")) {
+      console.error("✖ Dev reload did not pick up page.html change")
+      process.exit(1)
+    }
+    console.log("✔ Dev template reload verified")
+
+    // Restore original content
+    writeFileSync(homePageHtmlPath, originalContent, "utf8")
+
+    // Add a new route and verify it appears
+    console.log("Adding /about route for dev structure reload...")
+    const aboutDir = path.join(appPath, "app", "routes", "about")
+    mkdirSync(aboutDir, { recursive: true })
+    writeFileSync(path.join(aboutDir, "page.html"), "<h1>About Page</h1>", "utf8")
+
+    await new Promise(resolve => setTimeout(resolve, 1000))
+
+    const aboutRes = await fetch(`http://localhost:${devPort}/about`)
+    if (!aboutRes.ok) {
+      console.error(`✖ Dev /about returned status ${aboutRes.status}`)
+      process.exit(1)
+    }
+    const aboutHtml = await aboutRes.text()
+    if (!aboutHtml.includes("About Page")) {
+      console.error("✖ Dev new route content not found")
+      process.exit(1)
+    }
+    console.log("✔ Dev route structure reload verified")
+
+    // Remove the route and verify 404
+    console.log("Removing /about route...")
+    rmSync(aboutDir, { recursive: true, force: true })
+
+    await new Promise(resolve => setTimeout(resolve, 1000))
+
+    const aboutGoneRes = await fetch(`http://localhost:${devPort}/about`)
+    if (aboutGoneRes.status !== 404) {
+      console.error(`✖ Expected 404 after route removal, got ${aboutGoneRes.status}`)
+      process.exit(1)
+    }
+    console.log("✔ Dev route removal verified")
+  } finally {
+    try {
+      process.kill(devProc.pid, "SIGTERM")
+    } catch {}
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    try {
+      process.kill(devProc.pid, "SIGKILL")
     } catch {}
   }
 

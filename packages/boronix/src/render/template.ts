@@ -6,6 +6,24 @@ type RenderOptions = {
   rawKeys?: Set<string>
 }
 
+const templateCache = new Map<string, { content: string; loadedAt: number }>()
+
+export function invalidateTemplate(path: string): void {
+  templateCache.delete(path)
+}
+
+export function invalidateRouteTemplates(routeId: string): void {
+  for (const key of templateCache.keys()) {
+    if (key.includes(routeId)) {
+      templateCache.delete(key)
+    }
+  }
+}
+
+export function clearTemplateCache(): void {
+  templateCache.clear()
+}
+
 export function renderTemplate(template: string, data: TemplateContext = {}, options: RenderOptions = {}): string {
   const withEach = renderEachBlocks(template, data, options)
   const withIf = renderIfBlocks(withEach, data, options)

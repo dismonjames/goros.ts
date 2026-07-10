@@ -28,7 +28,7 @@ Generated dependencies:
 ```json
 {
   "dependencies": {
-    "boronix": "^0.5.0",
+    "boronix": "^0.6.0",
     "drizzle-orm": "latest"
   },
   "devDependencies": {

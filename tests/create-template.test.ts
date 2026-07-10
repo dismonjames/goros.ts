@@ -16,5 +16,5 @@ test("create template package has runnable scripts", () => {
   expect(templatePackage.scripts.dev).toBe("boronix dev")
   expect(templatePackage.scripts.build).toBe("boronix build")
   expect(templatePackage.scripts.start).toBe("boronix start")
-  expect(templatePackage.dependencies.boronix).toBe("^0.5.0")
+  expect(templatePackage.dependencies.boronix).toBe("^0.6.0")
 })

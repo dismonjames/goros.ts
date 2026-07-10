@@ -75,7 +75,7 @@ export function createBoronixApp(options: BoronixAppOptions): { fetch(req: Reque
           const res = json({
             status: "ok",
             framework: "boronix",
-            version: "0.5.0"
+            version: "0.6.0"
           })
           const finalResponse = commitSession(res, session)
           return applyResponseHeaders(finalResponse, requestId, !!options.dev, options.config)
@@ -467,7 +467,7 @@ async function renderPage(
 }
 
 async function importFresh(filePath: string): Promise<Record<string, unknown>> {
-  return import(`${pathToFileURL(filePath).href}?t=${Date.now()}`) as Promise<Record<string, unknown>>
+  return import(pathToFileURL(filePath).href) as Promise<Record<string, unknown>>
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -1040,4 +1040,3 @@ function applyResponseHeaders(
     headers
   })
 }
-

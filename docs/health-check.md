@@ -29,7 +29,7 @@ Returns `200 OK` with JSON:
 {
   "status": "ok",
   "framework": "boronix",
-  "version": "0.5.0"
+  "version": "0.6.0"
 }
 ```
 

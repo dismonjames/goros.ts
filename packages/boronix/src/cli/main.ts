@@ -74,7 +74,9 @@ async function main(argv: string[]): Promise<void> {
       noColor: parsed.noColor,
       open: parsed.open,
       quiet: parsed.quiet,
-      verbose: parsed.verbose
+      verbose: parsed.verbose,
+      noReload: parsed.noReload,
+      debugWatch: parsed.debugWatch
     })
     return
   }

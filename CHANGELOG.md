@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## v0.6.0 - Dev Server Speed & HMR-lite
+
+- Added stable development file watching.
+- Added template and public asset reloads without process restart.
+- Added isolated child-process restarts for server module changes.
+- Added automatic browser refresh through Server-Sent Events.
+- Added route add/remove/rename detection.
+- Added public asset reload handling.
+- Added restart recovery after source and config errors.
+- Added watch event debouncing and ignore rules.
+- Added reload latency logs and watch diagnostics.
+- Added Bun and Node development runtime coverage.
+
 ## v0.5.0 - Production Build Hardening
 
 - Added production environment validation.

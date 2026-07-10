@@ -198,7 +198,7 @@ export async function buildCommand(
   // Write actual build manifest
   writeBuildOutput(root, {
     version: 1,
-    frameworkVersion: "0.5.0",
+    frameworkVersion: "0.6.0",
     createdAt: new Date().toISOString(),
     runtime: runtimeName as "bun" | "node",
     mode: "production",

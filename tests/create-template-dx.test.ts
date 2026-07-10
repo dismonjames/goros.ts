@@ -12,5 +12,5 @@ test("create-boronix template includes error and not-found boundaries", () => {
 test("create-boronix template package.json has typegen script", () => {
   const pkg = JSON.parse(readFileSync(path.join(templateRoot, "package.json"), "utf8"))
   expect(pkg.scripts.typegen).toBe("boronix typegen")
-  expect(pkg.dependencies.boronix).toBe("^0.5.0")
+  expect(pkg.dependencies.boronix).toBe("^0.6.0")
 })

@@ -11,7 +11,7 @@ boronix <command> [options]
 ## Commands
 
 ### `dev`
-Start the development server with live request activity logging.
+Start the development server with live request activity logging, file watching, and automatic browser refresh.
 
 ```bash
 boronix dev [options]
@@ -25,6 +25,8 @@ boronix dev [options]
 - `-o, --open`: Open the browser automatically
 - `--quiet`: Startup and errors output only
 - `--verbose`: Detailed output with static asset requests
+- `--no-reload`: Disable browser auto-refresh and file watcher
+- `--debug-watch`: Print detailed file watch diagnostics
 - `--plain`: Disable colors, unicode, and spinner
 - `--no-color`: Disable terminal colors
 

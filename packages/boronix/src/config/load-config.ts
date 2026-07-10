@@ -18,7 +18,9 @@ export async function loadConfig(root: string): Promise<ResolvedBoronixConfig> {
   }
 
   if (existsSync(configPath)) {
-    const module = await import(`${pathToFileURL(configPath).href}?t=${Date.now()}`)
+    // Development config changes restart the isolated dev worker. A normal import
+    // is therefore sufficient and deliberately avoids process-local cache tricks.
+    const module = await import(pathToFileURL(configPath).href)
     userConfig = module.default ?? {}
   }
 
@@ -52,6 +54,12 @@ export async function loadConfig(root: string): Promise<ResolvedBoronixConfig> {
     },
     security: {
       headers: userConfig.security?.headers ?? defaultConfig.security.headers
+    },
+    dev: {
+      reload: userConfig.dev?.reload ?? defaultConfig.dev.reload,
+      watch: {
+        debounce: userConfig.dev?.watch?.debounce ?? defaultConfig.dev.watch.debounce
+      }
     }
   }
 }
@@ -70,4 +78,3 @@ function resolveSessionSecret(secret: string | undefined): string {
 
   return defaultConfig.session.secret
 }
-
